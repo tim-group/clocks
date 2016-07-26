@@ -1,0 +1,7 @@
+rootProject.name = "clocks"
+
+include 'joda'
+include 'testing'
+
+project(':joda').name = "clocks-joda"
+project(':testing').name = "clocks-testing"

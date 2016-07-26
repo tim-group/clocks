@@ -1,0 +1,44 @@
+subprojects {
+  ext.releaseVersion = '1.0'
+
+  group = 'com.timgroup'
+
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+  apply plugin: 'java'
+  apply plugin: 'yd'
+  apply plugin: 'ydlicense'
+}
+
+ext {
+  jodaTimeVersion = '2.9.1'
+}
+
+subprojects {
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+}
+
+subprojects {
+  task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+
+  artifacts {
+    archives sourcesJar
+  }
+}
+
+// this block is here to tell Gradle to fetch our youDevise plugins.
+// so don't edit anything below this point unless you have to
+buildscript {
+    repositories {
+        maven {
+            url "${repoUrl}/groups/public"
+        }
+    }
+    dependencies {
+        classpath group: 'com.youdevise', name: 'gradle-plugins', version: "1.394"
+    }
+}
