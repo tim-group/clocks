@@ -5,6 +5,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
+/**
+ * Clock that can be either free-running or latched to some fixed instant.
+ *
+ * @see ManualClock
+ */
 public class LatchableClock extends Clock {
     private final Clock delegate;
     private Instant fixedInstant;

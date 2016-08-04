@@ -5,6 +5,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
+/**
+ * Clock that only updates in positive increments when called directly.
+ */
 public class ManualClock extends Clock {
     private Instant instant;
     private final ZoneId zone;

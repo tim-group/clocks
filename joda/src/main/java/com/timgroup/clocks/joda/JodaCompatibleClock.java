@@ -7,6 +7,11 @@ import java.time.ZoneId;
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
 
+/**
+ * Clock that uses Joda-Time's static accessors for the current time and zone.
+ *
+ * @see DateTimeUtils
+ */
 public abstract class JodaCompatibleClock extends Clock {
     private static final JodaCompatibleClock INSTANCE = new JodaCompatibleClock.DefaultZone();
 

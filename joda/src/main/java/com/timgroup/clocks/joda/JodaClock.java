@@ -6,6 +6,18 @@ import java.time.ZoneOffset;
 
 import org.joda.time.DateTimeZone;
 
+/**
+ * An extended clock that serves as a source of Joda-Time instants and other
+ * types.
+ * <p>
+ * Delegates to a JSR310 clock to get the current millis and zone-id. Assumes
+ * that JSR310 zone IDs are equivalent to Joda-Time's --- which should generally
+ * be true, although they may be on different versions of the tzinfo data.
+ * <p>
+ * This is intended as a replacement for Clock/TimeService classes in
+ * applications that use Joda-Time. {@link #getDefault} will return an instance
+ * that is compatible with Joda-Time types' default constructors.
+ */
 public final class JodaClock extends Clock {
     private final Clock clock;
 
