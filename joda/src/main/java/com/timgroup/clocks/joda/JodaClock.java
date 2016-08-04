@@ -33,7 +33,10 @@ public final class JodaClock extends Clock {
     }
 
     public DateTimeZone getDateTimeZone() {
-        ZoneId zoneId = clock.getZone();
+        return toDateTimeZone(clock.getZone());
+    }
+
+    public static DateTimeZone toDateTimeZone(ZoneId zoneId) {
         if (zoneId == ZoneOffset.UTC) {
             return DateTimeZone.UTC;
         }
@@ -80,17 +83,19 @@ public final class JodaClock extends Clock {
     }
 
     public JodaClock withZone(DateTimeZone jodaTimeZone) {
-        ZoneId zone;
+        return withZone(toZoneId(jodaTimeZone));
+    }
+
+    public static ZoneId toZoneId(DateTimeZone jodaTimeZone) {
         if (jodaTimeZone == DateTimeZone.UTC) {
-            zone = ZoneOffset.UTC;
+            return ZoneOffset.UTC;
         }
         else if (jodaTimeZone.isFixed()) {
-            zone = ZoneOffset.ofTotalSeconds(jodaTimeZone.getOffset(0) / DateTimeConstants.MILLIS_PER_SECOND);
+            return ZoneOffset.ofTotalSeconds(jodaTimeZone.getOffset(0) / DateTimeConstants.MILLIS_PER_SECOND);
         }
         else {
-            zone = ZoneId.of(jodaTimeZone.getID());
+            return ZoneId.of(jodaTimeZone.getID());
         }
-        return withZone(zone);
     }
 
     @Override
