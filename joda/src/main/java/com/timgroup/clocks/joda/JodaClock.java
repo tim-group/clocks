@@ -1,5 +1,7 @@
 package com.timgroup.clocks.joda;
 
+import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
+
 import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -33,6 +35,10 @@ public final class JodaClock extends Clock {
         ZoneId zoneId = clock.getZone();
         if (zoneId == ZoneOffset.UTC) {
             return DateTimeZone.UTC;
+        }
+        if (zoneId instanceof ZoneOffset) {
+            ZoneOffset zoneOffset = (ZoneOffset) zoneId;
+            return DateTimeZone.forOffsetMillis(zoneOffset.getTotalSeconds() * MILLIS_PER_SECOND);
         }
         return DateTimeZone.forID(zoneId.getId());
     }

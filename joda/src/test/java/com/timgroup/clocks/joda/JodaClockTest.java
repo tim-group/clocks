@@ -3,6 +3,9 @@ package com.timgroup.clocks.joda;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
+import static org.joda.time.DateTimeConstants.MILLIS_PER_MINUTE;
+import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
 
 import java.time.Clock;
 import java.time.ZoneId;
@@ -31,9 +34,33 @@ public class JodaClockTest {
     }
 
     @Test
-    public void provides_equivalent_joda_time_zone() throws Exception {
+    public void provides_equivalent_joda_time_zone_for_named_zone() throws Exception {
         assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneId.of("America/Los_Angeles"))).getDateTimeZone(),
                 equalTo(DateTimeZone.forID("America/Los_Angeles")));
+    }
+
+    @Test
+    public void provides_equivalent_joda_time_zone_for_zone_offset() throws Exception {
+        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHours(6))).getDateTimeZone(),
+                equalTo(DateTimeZone.forOffsetHours(6)));
+    }
+
+    @Test
+    public void provides_equivalent_joda_time_zone_for_negative_zone_offset() throws Exception {
+        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHours(-6))).getDateTimeZone(),
+                equalTo(DateTimeZone.forOffsetHours(-6)));
+    }
+
+    @Test
+    public void provides_equivalent_joda_time_zone_for_zone_offset_with_minutes_offset() throws Exception {
+        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHoursMinutesSeconds(-11, -20, 0))).getDateTimeZone(),
+                equalTo(DateTimeZone.forOffsetHoursMinutes(-11, -20)));
+    }
+
+    @Test
+    public void provides_equivalent_joda_time_zone_for_zone_offset_with_bizarre_offset() throws Exception {
+        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHoursMinutesSeconds(-11, -20, -25))).getDateTimeZone(),
+                equalTo(DateTimeZone.forOffsetMillis(-11 * MILLIS_PER_HOUR + -20 * MILLIS_PER_MINUTE + -25 * MILLIS_PER_SECOND)));
     }
 
     @Test
