@@ -2,6 +2,7 @@ package com.timgroup.clocks.joda;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_MINUTE;
@@ -98,12 +99,29 @@ public class JodaClockTest {
     }
 
     @Test
-    public void joda_time_zone_can_be_applied_to_joda_clock() throws Exception {
+    public void joda_time_zone_with_id_can_be_applied_to_joda_clock() throws Exception {
         JodaClock jodaClockWithZone = new JodaClock(
                 Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
                         .withZone(DateTimeZone.forID("America/Los_Angeles"));
         assertThat(jodaClockWithZone.getZone(), equalTo(ZoneId.of("America/Los_Angeles")));
         assertThat(jodaClockWithZone.getDateTimeZone(), equalTo(DateTimeZone.forID("America/Los_Angeles")));
+    }
+
+    @Test
+    public void joda_time_zone_with_fixed_offset_can_be_applied_to_joda_clock() throws Exception {
+        JodaClock jodaClockWithZone = new JodaClock(
+                Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
+                        .withZone(DateTimeZone.forOffsetHours(6));
+        assertThat(jodaClockWithZone.getZone(), equalTo(ZoneOffset.ofHours(6)));
+        assertThat(jodaClockWithZone.getDateTimeZone(), equalTo(DateTimeZone.forOffsetHours(6)));
+    }
+
+    @Test
+    public void result_of_applying_a_fixed_offset_is_a_zone_offset() throws Exception {
+        JodaClock jodaClockWithZone = new JodaClock(
+                Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
+                        .withZone(DateTimeZone.forOffsetHours(6));
+        assertThat(jodaClockWithZone.getZone(), instanceOf(ZoneOffset.class));
     }
 
     @Test

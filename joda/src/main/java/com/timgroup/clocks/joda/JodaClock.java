@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 
 /**
@@ -82,6 +83,9 @@ public final class JodaClock extends Clock {
         ZoneId zone;
         if (jodaTimeZone == DateTimeZone.UTC) {
             zone = ZoneOffset.UTC;
+        }
+        else if (jodaTimeZone.isFixed()) {
+            zone = ZoneOffset.ofTotalSeconds(jodaTimeZone.getOffset(0) / DateTimeConstants.MILLIS_PER_SECOND);
         }
         else {
             zone = ZoneId.of(jodaTimeZone.getID());
