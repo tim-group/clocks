@@ -28,7 +28,14 @@ public final class JodaClock extends Clock {
         return new JodaClock(JodaCompatibleClock.getInstance());
     }
 
-    public JodaClock(Clock clock) {
+    public static JodaClock using(Clock clock) {
+        if (clock instanceof JodaClock) {
+            return (JodaClock) clock;
+        }
+        return new JodaClock(clock);
+    }
+
+    JodaClock(Clock clock) {
         this.clock = clock;
     }
 

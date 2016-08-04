@@ -141,4 +141,16 @@ public class JodaClockTest {
         JodaClock jodaClock = new JodaClock(Clock.systemUTC());
         assertThat(jodaClock.withZone(DateTimeZone.UTC), sameInstance(jodaClock));
     }
+
+    @Test
+    public void static_factory_wraps_given_clock() throws Exception {
+        JodaClock jodaClock = JodaClock.using(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC));
+        assertThat(jodaClock.now(), equalTo(org.joda.time.Instant.parse("2016-06-10T10:11:12Z")));
+    }
+
+    @Test
+    public void static_factory_returns_existing_joda_clock() throws Exception {
+        JodaClock jodaClock = JodaClock.using(Clock.systemUTC());
+        assertThat(JodaClock.using(jodaClock), sameInstance(jodaClock));
+    }
 }
