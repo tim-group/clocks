@@ -1,80 +1,81 @@
-package com.timgroup.clocks.testing;
+package com.timgroup.clocks.joda.testing;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
+import com.timgroup.clocks.joda.JodaClock;
 
 /**
  * Clock that only updates in positive increments when called directly.
  */
-public class ManualClock extends Clock {
+public class ManualJodaClock extends JodaClock {
     private Instant instant;
-    private final ZoneId zone;
+    private final DateTimeZone zone;
 
-    public ManualClock(Instant initialInstant, ZoneId zone) {
+    public ManualJodaClock(Instant initialInstant, DateTimeZone zone) {
         this.instant = requireNonNull(initialInstant);
         this.zone = requireNonNull(zone);
     }
 
     public void bumpSeconds(int secs) {
-        bump(Duration.ofSeconds(secs));
+        bump(Duration.standardSeconds(secs));
     }
 
     public void bumpMillis(long millis) {
-        bump(Duration.ofMillis(millis));
+        bump(Duration.millis(millis));
     }
 
     public void bump(Duration duration) {
-        if (duration.isNegative() || duration.isZero()) {
+        if (duration.compareTo(Duration.ZERO) <= 0) {
             throw new IllegalArgumentException("Duration must be positive");
         }
         instant = instant.plus(duration);
     }
 
     @Override
-    public Instant instant() {
+    public Instant now() {
         return instant;
     }
 
     @Override
-    public ZoneId getZone() {
+    public DateTimeZone getDateTimeZone() {
         return zone;
     }
 
     @Override
-    public Clock withZone(ZoneId overrideZone) {
+    public JodaClock withZone(DateTimeZone overrideZone) {
         requireNonNull(overrideZone);
         if (overrideZone.equals(zone)) {
             return this;
         }
-        return new Clock() {
+        return new JodaClock() {
             @Override
-            public Instant instant() {
+            public Instant now() {
                 return instant;
             }
 
             @Override
-            public ZoneId getZone() {
+            public DateTimeZone getDateTimeZone() {
                 return overrideZone;
             }
 
             @Override
-            public Clock withZone(ZoneId z) {
-                return ManualClock.this.withZone(z);
+            public JodaClock withZone(DateTimeZone jodaTimeZone) {
+                return ManualJodaClock.this.withZone(jodaTimeZone);
             }
 
             @Override
             public String toString() {
-                return ManualClock.this.toString() + "{zone:" + overrideZone + "}";
+                return ManualJodaClock.this.toString() + "{zone:" + overrideZone + "}";
             }
         };
     }
 
     @Override
     public String toString() {
-        return "ManualClock:" + instant;
+        return "ManualJodaClock:" + instant;
     }
 }

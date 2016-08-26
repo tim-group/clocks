@@ -2,6 +2,8 @@ rootProject.name = "clocks"
 
 include 'joda'
 include 'testing'
+include 'joda/testing'
 
-project(':joda').name = "clocks-joda"
-project(':testing').name = "clocks-testing"
+project(':joda').name = "joda"
+project(':testing').name = "testing"
+project(':joda/testing').name = "joda-testing"

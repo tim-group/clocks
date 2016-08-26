@@ -1,46 +1,47 @@
-package com.timgroup.clocks.testing;
+package com.timgroup.clocks.joda.testing;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
+import com.timgroup.clocks.joda.JodaClock;
 
 /**
  * Clock that can be either free-running or latched to some fixed instant.
  *
- * @see ManualClock
+ * @see ManualJodaClock
  */
-public class LatchableClock extends Clock {
-    private final Clock delegate;
+public class LatchableJodaClock extends JodaClock {
+    private final JodaClock delegate;
     private Instant fixedInstant;
 
-    public LatchableClock(Clock delegate) {
+    public LatchableJodaClock(JodaClock delegate) {
         this.delegate = delegate;
     }
 
     @Override
-    public Instant instant() {
+    public Instant now() {
         if (fixedInstant != null) {
             return fixedInstant;
         }
-        return delegate.instant();
+        return delegate.now();
     }
 
     @Override
     public long millis() {
         if (fixedInstant != null) {
-            return fixedInstant.toEpochMilli();
+            return fixedInstant.getMillis();
         }
         return delegate.millis();
     }
 
     @Override
-    public ZoneId getZone() {
-        return delegate.getZone();
+    public DateTimeZone getDateTimeZone() {
+        return delegate.getDateTimeZone();
     }
 
     public void latch() {
-        fixedInstant = instant();
+        fixedInstant = now();
     }
 
     public void latchTo(Instant instant) {
@@ -52,37 +53,37 @@ public class LatchableClock extends Clock {
     }
 
     @Override
-    public Clock withZone(ZoneId zone) {
-        return new Clock() {
+    public JodaClock withZone(DateTimeZone zone) {
+        return new JodaClock() {
             @Override
-            public Instant instant() {
-                return LatchableClock.this.instant();
+            public Instant now() {
+                return LatchableJodaClock.this.now();
             }
 
             @Override
             public long millis() {
-                return LatchableClock.this.millis();
+                return LatchableJodaClock.this.millis();
             }
 
             @Override
-            public Clock withZone(ZoneId zone) {
-                return LatchableClock.this.withZone(zone);
+            public JodaClock withZone(DateTimeZone zone) {
+                return LatchableJodaClock.this.withZone(zone);
             }
 
             @Override
-            public ZoneId getZone() {
+            public DateTimeZone getDateTimeZone() {
                 return zone;
             }
 
             @Override
             public String toString() {
-                return LatchableClock.this.toString() + "{zone:" + zone + "}";
+                return LatchableJodaClock.this.toString() + "{zone:" + zone + "}";
             }
         };
     }
 
     public void bump(Duration duration) {
-        if (duration.isNegative() || duration.isZero()) {
+        if (duration.compareTo(Duration.ZERO) <= 0) {
             throw new IllegalArgumentException("Duration must be positive");
         }
         if (fixedInstant == null) {
