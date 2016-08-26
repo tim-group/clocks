@@ -3,6 +3,7 @@ package com.timgroup.clocks.joda;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
@@ -21,26 +22,23 @@ import org.joda.time.DateTimeZone;
  * applications that use Joda-Time. {@link #getDefault} will return an instance
  * that is compatible with Joda-Time types' default constructors.
  */
-public final class JodaClock extends Clock {
-    private final Clock clock;
-
+public abstract class JodaClock extends Clock {
     public static JodaClock getDefault() {
-        return new JodaClock(JodaCompatibleClock.getInstance());
+        return using(JodaCompatibleClock.getInstance());
     }
 
     public static JodaClock using(Clock clock) {
         if (clock instanceof JodaClock) {
             return (JodaClock) clock;
         }
-        return new JodaClock(clock);
+        return new Delegating(clock);
     }
 
-    JodaClock(Clock clock) {
-        this.clock = clock;
-    }
+    public abstract DateTimeZone getDateTimeZone();
 
-    public DateTimeZone getDateTimeZone() {
-        return toDateTimeZone(clock.getZone());
+    @Override
+    public final ZoneId getZone() {
+        return toZoneId(getDateTimeZone());
     }
 
     public static DateTimeZone toDateTimeZone(ZoneId zoneId) {
@@ -54,43 +52,34 @@ public final class JodaClock extends Clock {
         return DateTimeZone.forID(zoneId.getId());
     }
 
-    public org.joda.time.Instant now() {
-        return new org.joda.time.Instant(clock.millis());
-    }
+    public abstract org.joda.time.Instant now();
 
-    public org.joda.time.DateTime nowDateTime() {
-        return new org.joda.time.DateTime(clock.millis(), getDateTimeZone());
-    }
-
-    public org.joda.time.LocalDateTime nowLocal() {
-        return new org.joda.time.LocalDateTime(clock.millis(), getDateTimeZone());
-    }
-
-    public org.joda.time.LocalDate today() {
-        return new org.joda.time.LocalDate(clock.millis(), getDateTimeZone());
+    @Override
+    public long millis() {
+        return now().getMillis();
     }
 
     @Override
-    public ZoneId getZone() {
-        return clock.getZone();
+    public final Instant instant() {
+        return Instant.ofEpochMilli(millis());
     }
 
-    @Override
-    public java.time.Instant instant() {
-        return clock.instant();
+    public final org.joda.time.DateTime nowDateTime() {
+        return new org.joda.time.DateTime(millis(), getDateTimeZone());
     }
 
-    @Override
-    public JodaClock withZone(ZoneId zone) {
-        Clock newClock = clock.withZone(zone);
-        if (newClock == clock) {
-            return this;
-        }
-        return new JodaClock(newClock);
+    public final org.joda.time.LocalDateTime nowLocal() {
+        return new org.joda.time.LocalDateTime(millis(), getDateTimeZone());
     }
 
-    public JodaClock withZone(DateTimeZone jodaTimeZone) {
-        return withZone(toZoneId(jodaTimeZone));
+    public final org.joda.time.LocalDate today() {
+        return new org.joda.time.LocalDate(millis(), getDateTimeZone());
+    }
+
+    public abstract JodaClock withZone(DateTimeZone jodaTimeZone);
+
+    public final JodaClock withZone(ZoneId zone) {
+        return withZone(toDateTimeZone(zone));
     }
 
     public static ZoneId toZoneId(DateTimeZone jodaTimeZone) {
@@ -105,8 +94,41 @@ public final class JodaClock extends Clock {
         }
     }
 
-    @Override
-    public String toString() {
-        return "JodaClock:" + clock;
+    private static final class Delegating extends JodaClock {
+        private final Clock clock;
+
+        Delegating(Clock clock) {
+            this.clock = clock;
+        }
+
+        @Override
+        public org.joda.time.Instant now() {
+            return new org.joda.time.Instant(clock.millis());
+        }
+
+        @Override
+        public long millis() {
+            return clock.millis();
+        }
+
+        @Override
+        public DateTimeZone getDateTimeZone() {
+            return toDateTimeZone(clock.getZone());
+        }
+
+        @Override
+        public JodaClock withZone(DateTimeZone jodaTimeZone) {
+            ZoneId zoneId = toZoneId(jodaTimeZone);
+            Clock newClock = clock.withZone(zoneId);
+            if (newClock == clock) {
+                return this;
+            }
+            return new Delegating(newClock);
+        }
+
+        @Override
+        public String toString() {
+            return "JodaClock:" + clock;
+        }
     }
 }

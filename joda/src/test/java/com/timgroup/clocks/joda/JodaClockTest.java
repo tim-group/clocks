@@ -18,56 +18,56 @@ import org.junit.Test;
 public class JodaClockTest {
     @Test
     public void provides_joda_utc_instance_for_system_utc_clock() throws Exception {
-        assertThat(new JodaClock(Clock.systemUTC()).getDateTimeZone(), sameInstance(DateTimeZone.UTC));
+        assertThat(JodaClock.using(Clock.systemUTC()).getDateTimeZone(), sameInstance(DateTimeZone.UTC));
     }
 
     @Test
     public void provides_joda_instant() throws Exception {
-        assertThat(new JodaClock(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC)).now(),
+        assertThat(JodaClock.using(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC)).now(),
                 equalTo(org.joda.time.Instant.parse("2016-06-10T10:11:12Z")));
     }
 
     @Test
     public void provides_same_joda_instant_regardless_of_timezone() throws Exception {
-        assertThat(new JodaClock(
+        assertThat(JodaClock.using(
                 Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("America/Los_Angeles"))).now(),
                 equalTo(org.joda.time.Instant.parse("2016-06-10T10:11:12Z")));
     }
 
     @Test
     public void provides_equivalent_joda_time_zone_for_named_zone() throws Exception {
-        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneId.of("America/Los_Angeles"))).getDateTimeZone(),
+        assertThat(JodaClock.using(Clock.systemUTC().withZone(ZoneId.of("America/Los_Angeles"))).getDateTimeZone(),
                 equalTo(DateTimeZone.forID("America/Los_Angeles")));
     }
 
     @Test
     public void provides_equivalent_joda_time_zone_for_zone_offset() throws Exception {
-        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHours(6))).getDateTimeZone(),
+        assertThat(JodaClock.using(Clock.systemUTC().withZone(ZoneOffset.ofHours(6))).getDateTimeZone(),
                 equalTo(DateTimeZone.forOffsetHours(6)));
     }
 
     @Test
     public void provides_equivalent_joda_time_zone_for_negative_zone_offset() throws Exception {
-        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHours(-6))).getDateTimeZone(),
+        assertThat(JodaClock.using(Clock.systemUTC().withZone(ZoneOffset.ofHours(-6))).getDateTimeZone(),
                 equalTo(DateTimeZone.forOffsetHours(-6)));
     }
 
     @Test
     public void provides_equivalent_joda_time_zone_for_zone_offset_with_minutes_offset() throws Exception {
-        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHoursMinutesSeconds(-11, -20, 0))).getDateTimeZone(),
+        assertThat(JodaClock.using(Clock.systemUTC().withZone(ZoneOffset.ofHoursMinutesSeconds(-11, -20, 0))).getDateTimeZone(),
                 equalTo(DateTimeZone.forOffsetHoursMinutes(-11, -20)));
     }
 
     @Test
     public void provides_equivalent_joda_time_zone_for_zone_offset_with_bizarre_offset() throws Exception {
-        assertThat(new JodaClock(Clock.systemUTC().withZone(ZoneOffset.ofHoursMinutesSeconds(-11, -20, -25))).getDateTimeZone(),
+        assertThat(JodaClock.using(Clock.systemUTC().withZone(ZoneOffset.ofHoursMinutesSeconds(-11, -20, -25))).getDateTimeZone(),
                 equalTo(DateTimeZone.forOffsetMillis(-11 * MILLIS_PER_HOUR + -20 * MILLIS_PER_MINUTE + -25 * MILLIS_PER_SECOND)));
     }
 
     @Test
     public void provides_localdatetime_in_clock_timezone() throws Exception {
         assertThat(
-                new JodaClock(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("Pacific/Midway")))
+                JodaClock.using(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("Pacific/Midway")))
                         .nowLocal(),
                 equalTo(org.joda.time.LocalDateTime.parse("2016-06-09T23:11:12")));
     }
@@ -75,7 +75,7 @@ public class JodaClockTest {
     @Test
     public void provides_localdate_in_clock_timezone() throws Exception {
         assertThat(
-                new JodaClock(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("Pacific/Midway")))
+                JodaClock.using(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("Pacific/Midway")))
                         .today(),
                 equalTo(org.joda.time.LocalDate.parse("2016-06-09")));
     }
@@ -83,7 +83,7 @@ public class JodaClockTest {
     @Test
     public void provides_datetime_in_clock_timezone() throws Exception {
         assertThat(
-                new JodaClock(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("Pacific/Midway")))
+                JodaClock.using(Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneId.of("Pacific/Midway")))
                         .nowDateTime(),
                 equalTo(org.joda.time.LocalDateTime.parse("2016-06-09T23:11:12")
                         .toDateTime(DateTimeZone.forID("Pacific/Midway"))));
@@ -91,7 +91,7 @@ public class JodaClockTest {
 
     @Test
     public void zone_id_can_be_applied_to_joda_clock() throws Exception {
-        JodaClock jodaClockWithZone = new JodaClock(
+        JodaClock jodaClockWithZone = JodaClock.using(
                 Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
                         .withZone(ZoneId.of("America/Los_Angeles"));
         assertThat(jodaClockWithZone.getZone(), equalTo(ZoneId.of("America/Los_Angeles")));
@@ -100,7 +100,7 @@ public class JodaClockTest {
 
     @Test
     public void joda_time_zone_with_id_can_be_applied_to_joda_clock() throws Exception {
-        JodaClock jodaClockWithZone = new JodaClock(
+        JodaClock jodaClockWithZone = JodaClock.using(
                 Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
                         .withZone(DateTimeZone.forID("America/Los_Angeles"));
         assertThat(jodaClockWithZone.getZone(), equalTo(ZoneId.of("America/Los_Angeles")));
@@ -109,7 +109,7 @@ public class JodaClockTest {
 
     @Test
     public void joda_time_zone_with_fixed_offset_can_be_applied_to_joda_clock() throws Exception {
-        JodaClock jodaClockWithZone = new JodaClock(
+        JodaClock jodaClockWithZone = JodaClock.using(
                 Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
                         .withZone(DateTimeZone.forOffsetHours(6));
         assertThat(jodaClockWithZone.getZone(), equalTo(ZoneOffset.ofHours(6)));
@@ -118,7 +118,7 @@ public class JodaClockTest {
 
     @Test
     public void result_of_applying_a_fixed_offset_is_a_zone_offset() throws Exception {
-        JodaClock jodaClockWithZone = new JodaClock(
+        JodaClock jodaClockWithZone = JodaClock.using(
                 Clock.fixed(java.time.Instant.parse("2016-06-10T10:11:12Z"), ZoneOffset.UTC))
                         .withZone(DateTimeZone.forOffsetHours(6));
         assertThat(jodaClockWithZone.getZone(), instanceOf(ZoneOffset.class));
@@ -126,19 +126,19 @@ public class JodaClockTest {
 
     @Test
     public void reapplying_utc_returns_same_instance() throws Exception {
-        JodaClock jodaClock = new JodaClock(Clock.systemUTC());
+        JodaClock jodaClock = JodaClock.using(Clock.systemUTC());
         assertThat(jodaClock.withZone(ZoneOffset.UTC), sameInstance(jodaClock));
     }
 
     @Test
     public void reapplying_same_offset_returns_same_instance() throws Exception {
-        JodaClock jodaClock = new JodaClock(Clock.system(ZoneOffset.ofHours(2)));
+        JodaClock jodaClock = JodaClock.using(Clock.system(ZoneOffset.ofHours(2)));
         assertThat(jodaClock.withZone(ZoneOffset.ofHours(2)), sameInstance(jodaClock));
     }
 
     @Test
     public void reapplying_joda_utc_returns_same_instance() throws Exception {
-        JodaClock jodaClock = new JodaClock(Clock.systemUTC());
+        JodaClock jodaClock = JodaClock.using(Clock.systemUTC());
         assertThat(jodaClock.withZone(DateTimeZone.UTC), sameInstance(jodaClock));
     }
 
