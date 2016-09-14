@@ -78,6 +78,10 @@ public abstract class JodaClock extends Clock {
 
     public abstract JodaClock withZone(DateTimeZone jodaTimeZone);
 
+    public final JodaClock withUTC() {
+        return withZone(DateTimeZone.UTC);
+    }
+
     public final JodaClock withZone(ZoneId zone) {
         return withZone(toDateTimeZone(zone));
     }
