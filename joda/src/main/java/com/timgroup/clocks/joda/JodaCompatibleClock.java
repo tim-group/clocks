@@ -1,8 +1,6 @@
 package com.timgroup.clocks.joda;
 
 import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
@@ -12,24 +10,18 @@ import org.joda.time.DateTimeZone;
  *
  * @see DateTimeUtils
  */
-public abstract class JodaCompatibleClock extends Clock {
-    private static final JodaCompatibleClock INSTANCE = new JodaCompatibleClock.DefaultZone();
-
-    public static Clock getInstance() {
-        return INSTANCE;
-    }
-
+public abstract class JodaCompatibleClock extends JodaClock {
     private JodaCompatibleClock() {
     }
 
     @Override
-    public Clock withZone(ZoneId zone) {
-        return new ZoneOverridden(zone);
+    public org.joda.time.Instant now() {
+        return new org.joda.time.Instant();
     }
 
     @Override
-    public Instant instant() {
-        return Instant.ofEpochMilli(DateTimeUtils.currentTimeMillis());
+    public JodaClock withZone(DateTimeZone jodaTimeZone) {
+        return new ZoneOverridden(jodaTimeZone);
     }
 
     @Override
@@ -39,8 +31,8 @@ public abstract class JodaCompatibleClock extends Clock {
 
     public static final class DefaultZone extends JodaCompatibleClock {
         @Override
-        public ZoneId getZone() {
-            return ZoneId.of(DateTimeZone.getDefault().getID());
+        public DateTimeZone getDateTimeZone() {
+            return DateTimeZone.getDefault();
         }
 
         @Override
@@ -50,23 +42,14 @@ public abstract class JodaCompatibleClock extends Clock {
     }
 
     public static final class ZoneOverridden extends JodaCompatibleClock {
-        private final ZoneId zone;
+        private final DateTimeZone zone;
 
-        private ZoneOverridden(ZoneId zone) {
+        private ZoneOverridden(DateTimeZone zone) {
             this.zone = zone;
         }
 
         @Override
-        public Clock withZone(ZoneId newZone) {
-            if (newZone.equals(zone)) {
-                return this;
-            }
-
-            return super.withZone(newZone);
-        }
-
-        @Override
-        public ZoneId getZone() {
+        public DateTimeZone getDateTimeZone() {
             return zone;
         }
 

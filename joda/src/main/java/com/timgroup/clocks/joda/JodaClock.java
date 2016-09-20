@@ -24,7 +24,7 @@ import org.joda.time.DateTimeZone;
  */
 public abstract class JodaClock extends Clock {
     public static JodaClock getDefault() {
-        return using(JodaCompatibleClock.getInstance());
+        return new JodaCompatibleClock.DefaultZone();
     }
 
     public static JodaClock using(Clock clock) {

@@ -14,23 +14,23 @@ public class JodaCompatibleClockTest {
     @Test
     public void setting_joda_time_global_affects_clock_output() throws Exception {
         DateTimeUtils.setCurrentMillisFixed(org.joda.time.Instant.parse("2015-04-21T11:18:33.123Z").getMillis());
-        assertThat(JodaCompatibleClock.getInstance().instant(), equalTo(java.time.Instant.parse("2015-04-21T11:18:33.123Z")));
+        assertThat(new JodaCompatibleClock.DefaultZone().instant(), equalTo(java.time.Instant.parse("2015-04-21T11:18:33.123Z")));
         DateTimeUtils.setCurrentMillisFixed(org.joda.time.Instant.parse("2015-04-21T11:21:59+01:00").getMillis());
-        assertThat(JodaCompatibleClock.getInstance().instant(), equalTo(java.time.Instant.parse("2015-04-21T10:21:59Z")));
+        assertThat(new JodaCompatibleClock.DefaultZone().instant(), equalTo(java.time.Instant.parse("2015-04-21T10:21:59Z")));
     }
 
     @Test
     public void setting_joda_time_timezone_affects_clock_output() throws Exception {
         DateTimeZone.setDefault(DateTimeZone.forID("America/New_York"));
-        assertThat(JodaCompatibleClock.getInstance().getZone(), equalTo(ZoneId.of("America/New_York")));
+        assertThat(new JodaCompatibleClock.DefaultZone().getZone(), equalTo(ZoneId.of("America/New_York")));
         DateTimeZone.setDefault(DateTimeZone.forID("Asia/Novosibirsk"));
-        assertThat(JodaCompatibleClock.getInstance().getZone(), equalTo(ZoneId.of("Asia/Novosibirsk")));
+        assertThat(new JodaCompatibleClock.DefaultZone().getZone(), equalTo(ZoneId.of("Asia/Novosibirsk")));
     }
 
     @Test
     public void overriding_clock_timezone_overrides_joda_setting() throws Exception {
         DateTimeZone.setDefault(DateTimeZone.forID("America/New_York"));
-        assertThat(JodaCompatibleClock.getInstance().withZone(ZoneId.of("Europe/Berlin")).getZone(), equalTo(ZoneId.of("Europe/Berlin")));
+        assertThat(new JodaCompatibleClock.DefaultZone().withZone(ZoneId.of("Europe/Berlin")).getZone(), equalTo(ZoneId.of("Europe/Berlin")));
     }
 
     @After
