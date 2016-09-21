@@ -1,5 +1,6 @@
 package com.timgroup.clocks.joda;
 
+import static java.util.Objects.requireNonNull;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
 
 import java.time.Clock;
@@ -28,6 +29,7 @@ public abstract class JodaClock extends Clock {
     }
 
     public static JodaClock using(Clock clock) {
+        requireNonNull(clock);
         if (clock instanceof JodaClock) {
             return (JodaClock) clock;
         }
@@ -42,6 +44,7 @@ public abstract class JodaClock extends Clock {
     }
 
     public static DateTimeZone toDateTimeZone(ZoneId zoneId) {
+        requireNonNull(zoneId);
         if (zoneId == ZoneOffset.UTC) {
             return DateTimeZone.UTC;
         }
@@ -87,6 +90,7 @@ public abstract class JodaClock extends Clock {
     }
 
     public static ZoneId toZoneId(DateTimeZone jodaTimeZone) {
+        requireNonNull(jodaTimeZone);
         if (jodaTimeZone == DateTimeZone.UTC) {
             return ZoneOffset.UTC;
         }
@@ -102,7 +106,7 @@ public abstract class JodaClock extends Clock {
         private final Clock clock;
 
         Delegating(Clock clock) {
-            this.clock = clock;
+            this.clock = requireNonNull(clock);
         }
 
         @Override
@@ -122,7 +126,7 @@ public abstract class JodaClock extends Clock {
 
         @Override
         public JodaClock withZone(DateTimeZone jodaTimeZone) {
-            ZoneId zoneId = toZoneId(jodaTimeZone);
+            ZoneId zoneId = toZoneId(requireNonNull(jodaTimeZone));
             Clock newClock = clock.withZone(zoneId);
             if (newClock == clock) {
                 return this;

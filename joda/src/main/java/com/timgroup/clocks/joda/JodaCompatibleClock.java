@@ -1,9 +1,9 @@
 package com.timgroup.clocks.joda;
 
-import java.time.Clock;
-
 import org.joda.time.DateTimeUtils;
 import org.joda.time.DateTimeZone;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Clock that uses Joda-Time's static accessors for the current time and zone.
@@ -45,7 +45,7 @@ public abstract class JodaCompatibleClock extends JodaClock {
         private final DateTimeZone zone;
 
         private ZoneOverridden(DateTimeZone zone) {
-            this.zone = zone;
+            this.zone = requireNonNull(zone);
         }
 
         @Override
