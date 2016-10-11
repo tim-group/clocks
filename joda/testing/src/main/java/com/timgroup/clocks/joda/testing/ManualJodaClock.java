@@ -15,6 +15,14 @@ public class ManualJodaClock extends JodaClock {
     private Instant instant;
     private final DateTimeZone zone;
 
+    public static ManualJodaClock initiallyAt(JodaClock clock) {
+        return new ManualJodaClock(clock.now(), clock.getDateTimeZone());
+    }
+
+    public static ManualJodaClock createDefault() {
+        return initiallyAt(JodaClock.getDefault());
+    }
+
     public ManualJodaClock(Instant initialInstant, DateTimeZone zone) {
         this.instant = requireNonNull(initialInstant);
         this.zone = requireNonNull(zone);

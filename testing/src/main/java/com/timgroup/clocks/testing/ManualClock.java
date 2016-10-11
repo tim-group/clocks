@@ -14,6 +14,14 @@ public class ManualClock extends Clock {
     private Instant instant;
     private final ZoneId zone;
 
+    public static ManualClock initiallyAt(Clock clock) {
+        return new ManualClock(clock.instant(), clock.getZone());
+    }
+
+    public static ManualClock createDefault() {
+        return initiallyAt(Clock.systemUTC());
+    }
+
     public ManualClock(Instant initialInstant, ZoneId zone) {
         this.instant = requireNonNull(initialInstant);
         this.zone = requireNonNull(zone);
