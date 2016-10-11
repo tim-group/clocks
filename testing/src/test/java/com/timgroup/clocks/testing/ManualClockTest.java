@@ -21,7 +21,7 @@ public class ManualClockTest {
     }
 
     @Test
-    public void advances_by_arbitary_duration() throws Exception {
+    public void advances_by_arbitrary_duration() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bump(Duration.parse("PT321.123S"));
         assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:35:21.123Z")));
