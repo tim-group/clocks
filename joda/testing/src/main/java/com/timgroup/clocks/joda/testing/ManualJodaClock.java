@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Clock that only updates in positive increments when called directly.
  */
-public class ManualJodaClock extends JodaClock {
+public final class ManualJodaClock extends JodaClock {
     private Instant instant;
     private final DateTimeZone zone;
 

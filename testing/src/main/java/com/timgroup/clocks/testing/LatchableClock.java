@@ -10,7 +10,7 @@ import java.time.ZoneId;
  *
  * @see ManualClock
  */
-public class LatchableClock extends Clock {
+public final class LatchableClock extends Clock {
     private final Clock delegate;
     private Instant fixedInstant;
 

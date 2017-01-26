@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Clock that only updates in positive increments when called directly.
  */
-public class ManualClock extends Clock {
+public final class ManualClock extends Clock {
     private Instant instant;
     private final ZoneId zone;
 

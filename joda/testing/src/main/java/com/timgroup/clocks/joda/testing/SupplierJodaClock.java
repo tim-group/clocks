@@ -2,10 +2,9 @@ package com.timgroup.clocks.joda.testing;
 
 import java.util.function.Supplier;
 
+import com.timgroup.clocks.joda.JodaClock;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
-
-import com.timgroup.clocks.joda.JodaClock;
 
 /**
  * Clock that delegates to a supplier of instants.
@@ -18,7 +17,7 @@ import com.timgroup.clocks.joda.JodaClock;
  *
  * @see ManualJodaClock
  */
-public class SupplierJodaClock extends JodaClock {
+public final class SupplierJodaClock extends JodaClock {
     private final Supplier<Instant> supplier;
     private final DateTimeZone zone;
 

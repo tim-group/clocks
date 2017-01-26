@@ -1,17 +1,16 @@
 package com.timgroup.clocks.joda.testing;
 
+import com.timgroup.clocks.joda.JodaClock;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-
-import com.timgroup.clocks.joda.JodaClock;
 
 /**
  * Clock that can be either free-running or latched to some fixed instant.
  *
  * @see ManualJodaClock
  */
-public class LatchableJodaClock extends JodaClock {
+public final class LatchableJodaClock extends JodaClock {
     private final JodaClock delegate;
     private Instant fixedInstant;
 
