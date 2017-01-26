@@ -1,11 +1,11 @@
 package com.timgroup.clocks.testing;
 
-import static java.util.Objects.requireNonNull;
-
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Clock that only updates in positive increments when called directly.
@@ -40,6 +40,14 @@ public class ManualClock extends Clock {
             throw new IllegalArgumentException("Duration must be positive");
         }
         instant = instant.plus(duration);
+    }
+
+    public void advanceTo(Instant futureInstant) {
+        requireNonNull(futureInstant);
+        if (futureInstant.isAfter(instant)) {
+            throw new IllegalArgumentException("Instant must not be before the current time");
+        }
+        instant = futureInstant;
     }
 
     @Override

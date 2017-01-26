@@ -1,12 +1,11 @@
 package com.timgroup.clocks.joda.testing;
 
-import static java.util.Objects.requireNonNull;
-
+import com.timgroup.clocks.joda.JodaClock;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import com.timgroup.clocks.joda.JodaClock;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Clock that only updates in positive increments when called directly.
@@ -41,6 +40,14 @@ public class ManualJodaClock extends JodaClock {
             throw new IllegalArgumentException("Duration must be positive");
         }
         instant = instant.plus(duration);
+    }
+
+    public void advanceTo(Instant futureInstant) {
+        requireNonNull(futureInstant);
+        if (futureInstant.isAfter(instant)) {
+            throw new IllegalArgumentException("Instant must not be before the current time");
+        }
+        instant = futureInstant;
     }
 
     @Override

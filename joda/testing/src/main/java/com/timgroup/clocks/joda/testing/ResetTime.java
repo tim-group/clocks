@@ -13,6 +13,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * JUnit rule for resetting time via Joda-Time.
  */
@@ -116,7 +118,13 @@ public final class ResetTime extends JodaClock implements TestRule {
         bump(Duration.standardSeconds(seconds));
     }
 
+    /**
+     * Advance the fixed time to the given instant
+     * <p>
+     * @see ManualJodaClock#advanceTo
+     */
     public void advanceTo(Instant futureInstant) {
+        requireNonNull(futureInstant);
         if (futureInstant.isBefore(now())) {
             throw new IllegalArgumentException("Attempted to move back in time from " + now() + " to " + futureInstant);
         }
