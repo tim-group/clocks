@@ -5,6 +5,8 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Clock that can be either free-running or latched to some fixed instant.
  *
@@ -15,7 +17,7 @@ public final class LatchableJodaClock extends JodaClock {
     private Instant fixedInstant;
 
     public LatchableJodaClock(JodaClock delegate) {
-        this.delegate = delegate;
+        this.delegate = requireNonNull(delegate);
     }
 
     @Override
@@ -53,6 +55,7 @@ public final class LatchableJodaClock extends JodaClock {
 
     @Override
     public JodaClock withZone(DateTimeZone zone) {
+        requireNonNull(zone);
         return new JodaClock() {
             @Override
             public Instant now() {

@@ -5,6 +5,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Clock that can be either free-running or latched to some fixed instant.
  *
@@ -15,7 +17,7 @@ public final class LatchableClock extends Clock {
     private Instant fixedInstant;
 
     public LatchableClock(Clock delegate) {
-        this.delegate = delegate;
+        this.delegate = requireNonNull(delegate);
     }
 
     @Override

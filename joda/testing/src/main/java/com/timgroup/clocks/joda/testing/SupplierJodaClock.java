@@ -6,6 +6,8 @@ import com.timgroup.clocks.joda.JodaClock;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Clock that delegates to a supplier of instants.
  * <p>
@@ -30,8 +32,8 @@ public final class SupplierJodaClock extends JodaClock {
     }
 
     public SupplierJodaClock(Supplier<Instant> supplier, DateTimeZone zone) {
-        this.supplier = supplier;
-        this.zone = zone;
+        this.supplier = requireNonNull(supplier);
+        this.zone = requireNonNull(zone);
     }
 
     @Override
@@ -46,6 +48,7 @@ public final class SupplierJodaClock extends JodaClock {
 
     @Override
     public JodaClock withZone(DateTimeZone newZone) {
+        requireNonNull(newZone);
         if (newZone.equals(zone)) {
             return this;
         }

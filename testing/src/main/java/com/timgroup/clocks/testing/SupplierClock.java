@@ -6,6 +6,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.function.Supplier;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Clock that delegates to a supplier of instants.
  * <p>
@@ -30,8 +32,8 @@ public final class SupplierClock extends Clock {
     }
 
     public SupplierClock(Supplier<Instant> supplier, ZoneId zone) {
-        this.supplier = supplier;
-        this.zone = zone;
+        this.supplier = requireNonNull(supplier);
+        this.zone = requireNonNull(zone);
     }
 
     @Override
