@@ -84,6 +84,11 @@ public final class ResetTime extends JodaClock implements TestRule {
             public JodaClock withZone(DateTimeZone jodaTimeZone) {
                 return ResetTime.this.withZone(jodaTimeZone);
             }
+
+            @Override
+            public String toString() {
+                return ResetTime.this.toString() + "{ zone = " + jodaTimeZone + " }";
+            }
         };
     }
 
@@ -172,5 +177,10 @@ public final class ResetTime extends JodaClock implements TestRule {
             TimeZone.setDefault(null);
             DateTimeZone.setDefault(DateTimeZone.forTimeZone(TimeZone.getDefault()));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ResetTime.to(" + timeToResetTo + (offset.isLongerThan(Duration.ZERO) ? " plus " + offset + ")" : ")");
     }
 }
