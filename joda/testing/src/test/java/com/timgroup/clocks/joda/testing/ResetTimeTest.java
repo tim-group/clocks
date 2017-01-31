@@ -1,9 +1,15 @@
 package com.timgroup.clocks.joda.testing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Test;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -52,5 +58,69 @@ public class ResetTimeTest {
         }
 
         assertThat(dateTimeInsideBlock, equalTo(new DateTime(fixedInstant, fixedTimeZone)));
+    }
+
+    @Test
+    public void enacts_changes_for_runnable() throws Exception {
+        List<Instant> container = new ArrayList<>();
+        ResetTime.to(fixedInstant).run(() -> container.add(Instant.now()));
+        Instant instantInsideBlock = container.iterator().next();
+        assertThat(instantInsideBlock, equalTo(fixedInstant));
+    }
+
+    @Test
+    public void enacts_changes_for_supplier() throws Exception {
+        Instant instantInsideBlock = ResetTime.to(fixedInstant).supply(Instant::now);
+        assertThat(instantInsideBlock, equalTo(fixedInstant));
+    }
+
+    @Test
+    public void enacts_changes_for_junit_statement() throws Throwable {
+        class CaptureStatement extends Statement {
+            private Instant result;
+
+            @Override
+            public void evaluate() throws Throwable {
+                result = Instant.now();
+            }
+        }
+        CaptureStatement statement = new CaptureStatement();
+        Description description = Description.createSuiteDescription(getClass());
+        ResetTime.to(fixedInstant).apply(statement, description).evaluate();
+        assertThat(statement.result, equalTo(fixedInstant));
+    }
+
+    @Test
+    public void bumps_by_positive_millis() throws Exception {
+        ResetTime resetTime = ResetTime.to(fixedInstant);
+        resetTime.bumpMillis(100L);
+        assertThat(resetTime.now(), equalTo(fixedInstant.plus(100L)));
+    }
+
+    @Test
+    public void bumps_by_positive_seconds() throws Exception {
+        ResetTime resetTime = ResetTime.to(fixedInstant);
+        resetTime.bumpSeconds(5);
+        assertThat(resetTime.now(), equalTo(fixedInstant.plus(Duration.standardSeconds(5))));
+    }
+
+    @Test
+    public void bumps_by_duration() throws Exception {
+        ResetTime resetTime = ResetTime.to(fixedInstant);
+        resetTime.bump(Duration.standardMinutes(1));
+        assertThat(resetTime.now(), equalTo(fixedInstant.plus(Duration.standardMinutes(1))));
+    }
+
+    @Test
+    public void advances_to_specified_time() throws Exception {
+        ResetTime resetTime = ResetTime.to(fixedInstant);
+        resetTime.advanceTo(fixedInstant.plus(Duration.standardHours(2)));
+        assertThat(resetTime.now(), equalTo(fixedInstant.plus(Duration.standardHours(2))));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void refuses_to_advance_to_past_time() throws Exception {
+        ResetTime resetTime = ResetTime.to(fixedInstant);
+        resetTime.advanceTo(fixedInstant.minus(Duration.standardHours(2)));
     }
 }
