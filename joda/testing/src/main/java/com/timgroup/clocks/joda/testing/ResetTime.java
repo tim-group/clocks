@@ -97,7 +97,6 @@ public final class ResetTime extends JodaClock implements TestRule {
             throw new IllegalArgumentException("Duration must be positive");
         }
         offset = offset.plus(duration);
-        DateTimeUtils.setCurrentMillisFixed(millis());
     }
 
     /**
@@ -129,7 +128,6 @@ public final class ResetTime extends JodaClock implements TestRule {
             throw new IllegalArgumentException("Attempted to move back in time from " + now() + " to " + futureInstant);
         }
         offset = Duration.millis(futureInstant.getMillis() - timeToResetTo.getMillis());
-        DateTimeUtils.setCurrentMillisFixed(futureInstant.getMillis());
     }
 
     /**
@@ -145,7 +143,7 @@ public final class ResetTime extends JodaClock implements TestRule {
      * </p>
      */
     public Resource open() {
-        DateTimeUtils.setCurrentMillisFixed(millis());
+        DateTimeUtils.setCurrentMillisProvider(this::millis);
         DateTimeZone.setDefault(timeZone);
         TimeZone.setDefault(TimeZone.getTimeZone(timeZone.getID()));
         return new Resource();
