@@ -91,4 +91,17 @@ public class ManualClockTest {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         assertThat(clock.withZone(UTC), sameInstance(clock));
     }
+
+    @Test
+    public void it_advances_to_an_instant() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("1982-06-22T16:00:00Z"), UTC);
+        clock.advanceTo(Instant.parse("2017-02-03T12:05:03Z"));
+        assertThat(clock.instant(), equalTo(Instant.parse("2017-02-03T12:05:03Z")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void it_refuses_to_advance_to_a_past_instant() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("2020-12-25T01:02:03Z"), UTC);
+        clock.advanceTo(Instant.parse("2017-02-03T12:05:03Z"));
+    }
 }

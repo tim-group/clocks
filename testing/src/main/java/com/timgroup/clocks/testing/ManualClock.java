@@ -44,7 +44,7 @@ public final class ManualClock extends Clock {
 
     public void advanceTo(Instant futureInstant) {
         requireNonNull(futureInstant);
-        if (futureInstant.isAfter(instant)) {
+        if (futureInstant.isBefore(instant)) {
             throw new IllegalArgumentException("Instant must not be before the current time");
         }
         instant = futureInstant;
