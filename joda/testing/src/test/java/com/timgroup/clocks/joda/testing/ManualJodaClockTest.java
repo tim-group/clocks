@@ -1,16 +1,15 @@
 package com.timgroup.clocks.joda.testing;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.joda.time.DateTimeZone.UTC;
-
+import com.timgroup.clocks.joda.JodaClock;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Test;
 
-import com.timgroup.clocks.joda.JodaClock;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.joda.time.DateTimeZone.UTC;
 
 public class ManualJodaClockTest {
     @Test
@@ -91,5 +90,25 @@ public class ManualJodaClockTest {
     public void overriding_with_same_zone_returns_original_clock() throws Exception {
         ManualJodaClock clock = new ManualJodaClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         assertThat(clock.withZone(UTC), sameInstance(clock));
+    }
+
+    @Test
+    public void advances_to_an_instant() throws Exception {
+        ManualJodaClock clock = new ManualJodaClock(Instant.parse("1982-06-22T16:00:00Z"), UTC);
+        clock.advanceTo(Instant.parse("2017-02-03T12:05:03Z"));
+        assertThat(clock.now(), equalTo(Instant.parse("2017-02-03T12:05:03Z")));
+    }
+
+    @Test
+    public void advancing_to_current_instant_is_noop() throws Exception {
+        ManualJodaClock clock = new ManualJodaClock(Instant.parse("1982-06-22T16:00:00Z"), UTC);
+        clock.advanceTo(Instant.parse("1982-06-22T16:00:00Z"));
+        assertThat(clock.now(), equalTo(Instant.parse("1982-06-22T16:00:00Z")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void refuses_to_advance_to_a_past_instant() throws Exception {
+        ManualJodaClock clock = new ManualJodaClock(Instant.parse("2020-12-25T01:02:03Z"), UTC);
+        clock.advanceTo(Instant.parse("2017-02-03T12:05:03Z"));
     }
 }

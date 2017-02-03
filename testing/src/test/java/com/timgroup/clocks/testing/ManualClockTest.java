@@ -1,15 +1,16 @@
 package com.timgroup.clocks.testing;
 
-import static java.time.ZoneOffset.UTC;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.sameInstance;
-
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+
 import org.junit.Test;
+
+import static java.time.ZoneOffset.UTC;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.sameInstance;
 
 public class ManualClockTest {
     @Test
@@ -93,14 +94,21 @@ public class ManualClockTest {
     }
 
     @Test
-    public void it_advances_to_an_instant() throws Exception {
+    public void advances_to_an_instant() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("1982-06-22T16:00:00Z"), UTC);
         clock.advanceTo(Instant.parse("2017-02-03T12:05:03Z"));
         assertThat(clock.instant(), equalTo(Instant.parse("2017-02-03T12:05:03Z")));
     }
 
+    @Test
+    public void advancing_to_current_instant_is_noop() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("1982-06-22T16:00:00Z"), UTC);
+        clock.advanceTo(Instant.parse("1982-06-22T16:00:00Z"));
+        assertThat(clock.instant(), equalTo(Instant.parse("1982-06-22T16:00:00Z")));
+    }
+
     @Test(expected = IllegalArgumentException.class)
-    public void it_refuses_to_advance_to_a_past_instant() throws Exception {
+    public void refuses_to_advance_to_a_past_instant() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2020-12-25T01:02:03Z"), UTC);
         clock.advanceTo(Instant.parse("2017-02-03T12:05:03Z"));
     }
