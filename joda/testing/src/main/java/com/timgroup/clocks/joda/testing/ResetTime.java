@@ -19,12 +19,11 @@ import static java.util.Objects.requireNonNull;
  * JUnit rule for resetting time via Joda-Time.
  */
 public final class ResetTime extends JodaClock implements TestRule {
-    private final Instant timeToResetTo;
     private final DateTimeZone timeZone;
-    private Duration offset = Duration.ZERO;
+    private Instant instant;
 
     private ResetTime(Instant timeToResetTo, DateTimeZone timeZone) {
-        this.timeToResetTo = timeToResetTo;
+        this.instant = timeToResetTo;
         this.timeZone = timeZone;
     }
 
@@ -59,7 +58,7 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     @Override
     public Instant now() {
-        return timeToResetTo.plus(offset);
+        return instant;
     }
 
     @Override
@@ -77,7 +76,7 @@ public final class ResetTime extends JodaClock implements TestRule {
 
             @Override
             public Instant now() {
-                return timeToResetTo;
+                return instant;
             }
 
             @Override
@@ -101,7 +100,7 @@ public final class ResetTime extends JodaClock implements TestRule {
         if (duration.compareTo(Duration.ZERO) <= 0) {
             throw new IllegalArgumentException("Duration must be positive");
         }
-        offset = offset.plus(duration);
+        instant = instant.plus(duration);
     }
 
     /**
@@ -132,7 +131,7 @@ public final class ResetTime extends JodaClock implements TestRule {
         if (futureInstant.isBefore(now())) {
             throw new IllegalArgumentException("Attempted to move back in time from " + now() + " to " + futureInstant);
         }
-        offset = Duration.millis(futureInstant.getMillis() - timeToResetTo.getMillis());
+        instant = futureInstant;
     }
 
     /**
@@ -181,6 +180,6 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     @Override
     public String toString() {
-        return "ResetTime.to(" + timeToResetTo + (offset.isLongerThan(Duration.ZERO) ? " plus " + offset + ")" : ")");
+        return "ResetTime.to(" + instant + ")";
     }
 }
