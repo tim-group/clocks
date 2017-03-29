@@ -4,8 +4,6 @@ subprojects {
     apply plugin: 'autobumper'
     apply plugin: 'jarmangit'
 
-    sourceCompatibility = 1.8
-
     group = 'com.timgroup'
     if (System.getenv('BUILD_NUMBER') != null) {
         version = "1.0." + System.getenv('BUILD_NUMBER')
@@ -17,6 +15,15 @@ ext {
 }
 
 subprojects {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+        options.encoding = "UTF-8"
+        options.incremental = true
+        options.deprecation = true
+        options.compilerArgs << "-parameters"
+    }
+
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
         from sourceSets.main.allSource
