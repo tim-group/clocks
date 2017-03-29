@@ -13,7 +13,7 @@ subprojects {
 }
 
 ext {
-    jodaTimeVersion = '2.9.7'
+    jodaTimeVersion = '2.9.9'
 }
 
 subprojects {
