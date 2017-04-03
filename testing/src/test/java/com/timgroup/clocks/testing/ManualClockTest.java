@@ -4,6 +4,13 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
+import java.time.temporal.UnsupportedTemporalTypeException;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -13,6 +20,32 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.sameInstance;
 
 public class ManualClockTest {
+    // somewhat like Duration.ofMinutes(2) but not a Duration
+    private static final TemporalAmount NONSTANDARD_TWO_MINUTES = new TemporalAmount() {
+        @Override
+        public long get(TemporalUnit unit) {
+            if (unit.equals(ChronoUnit.MINUTES)) {
+                return 2;
+            }
+            throw new UnsupportedTemporalTypeException("Not supported: " + unit);
+        }
+
+        @Override
+        public List<TemporalUnit> getUnits() {
+            return Collections.singletonList(ChronoUnit.MINUTES);
+        }
+
+        @Override
+        public Temporal addTo(Temporal temporal) {
+            return ((Instant) temporal).plus(2, ChronoUnit.MINUTES);
+        }
+
+        @Override
+        public Temporal subtractFrom(Temporal temporal) {
+            return ((Instant) temporal).minus(2, ChronoUnit.MINUTES);
+        }
+    };
+
     @Test
     public void returns_initial_time_and_zone() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
@@ -26,6 +59,20 @@ public class ManualClockTest {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bump(Duration.parse("PT321.123S"));
         assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:35:21.123Z")));
+    }
+
+    @Test
+    public void advances_by_amount_with_temporal_unit() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        clock.bump(2, ChronoUnit.MINUTES);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:32:00Z")));
+    }
+
+    @Test
+    public void advances_by_arbitrary_temporal_amount() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        clock.bump(NONSTANDARD_TWO_MINUTES);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:32:00Z")));
     }
 
     @Test

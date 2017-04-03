@@ -4,6 +4,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,12 +29,33 @@ public final class ManualClock extends Clock {
         this.zone = requireNonNull(zone);
     }
 
+    public void bump(long amountToAdd, TemporalUnit unit) {
+        if (amountToAdd < 0) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
+        instant = instant.plus(amountToAdd, unit);
+    }
+
     public void bumpSeconds(int secs) {
-        bump(Duration.ofSeconds(secs));
+        if (secs < 1) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
+        instant = instant.plusSeconds(secs);
     }
 
     public void bumpMillis(long millis) {
-        bump(Duration.ofMillis(millis));
+        if (millis < 1) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
+        instant = instant.plusMillis(millis);
+    }
+
+    public void bump(TemporalAmount amountToAdd) {
+        Instant newInstant = instant.plus(amountToAdd);
+        if (newInstant.isBefore(instant)) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
+        instant = newInstant;
     }
 
     public void bump(Duration duration) {
