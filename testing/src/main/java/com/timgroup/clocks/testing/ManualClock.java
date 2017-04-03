@@ -31,21 +31,21 @@ public final class ManualClock extends Clock {
 
     public void bump(long amountToAdd, TemporalUnit unit) {
         if (amountToAdd < 0) {
-            throw new IllegalArgumentException("Duration must be positive");
+            throw new IllegalArgumentException("Duration must be non-negative");
         }
         instant = instant.plus(amountToAdd, unit);
     }
 
     public void bumpSeconds(int secs) {
-        if (secs < 1) {
-            throw new IllegalArgumentException("Duration must be positive");
+        if (secs < 0) {
+            throw new IllegalArgumentException("Duration must be non-negative");
         }
         instant = instant.plusSeconds(secs);
     }
 
     public void bumpMillis(long millis) {
-        if (millis < 1) {
-            throw new IllegalArgumentException("Duration must be positive");
+        if (millis < 0) {
+            throw new IllegalArgumentException("Duration must be non-negative");
         }
         instant = instant.plusMillis(millis);
     }
@@ -53,14 +53,14 @@ public final class ManualClock extends Clock {
     public void bump(TemporalAmount amountToAdd) {
         Instant newInstant = instant.plus(amountToAdd);
         if (newInstant.isBefore(instant)) {
-            throw new IllegalArgumentException("Duration must be positive");
+            throw new IllegalArgumentException("Duration must be non-negative");
         }
         instant = newInstant;
     }
 
     public void bump(Duration duration) {
-        if (duration.isNegative() || duration.isZero()) {
-            throw new IllegalArgumentException("Duration must be positive");
+        if (duration.isNegative()) {
+            throw new IllegalArgumentException("Duration must be non-negative");
         }
         instant = instant.plus(duration);
     }

@@ -89,22 +89,32 @@ public class ManualClockTest {
         assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:32:03Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void refuses_to_advance_by_zero_millis() throws Exception {
+    @Test
+    public void advance_by_zero_millis_is_a_noop() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bumpMillis(0L);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void refuses_to_advance_by_zero_seconds() throws Exception {
+    @Test
+    public void advance_by_zero_seconds_is_a_noop() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bumpSeconds(0);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void refuses_to_advance_by_zero_duration() throws Exception {
+    @Test
+    public void advance_by_zero_duration_is_a_noop() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bump(Duration.ZERO);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
+    }
+
+    @Test
+    public void advance_by_zero_of_units_is_a_noop() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        clock.bump(0, ChronoUnit.MINUTES);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -123,6 +133,12 @@ public class ManualClockTest {
     public void refuses_to_advance_by_negative_duration() throws Exception {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bump(Duration.parse("PT-1S"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void refuses_to_advance_by_negative_of_units() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        clock.bump(-1, ChronoUnit.MINUTES);
     }
 
     @Test

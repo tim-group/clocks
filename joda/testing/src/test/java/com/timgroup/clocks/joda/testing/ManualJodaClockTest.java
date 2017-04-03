@@ -41,22 +41,25 @@ public class ManualJodaClockTest {
         assertThat(clock.now(), equalTo(Instant.parse("2016-08-26T18:32:03Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void refuses_to_advance_by_zero_millis() throws Exception {
+    @Test
+    public void advancing_by_zero_millis_is_a_noop() throws Exception {
         ManualJodaClock clock = new ManualJodaClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bumpMillis(0L);
+        assertThat(clock.now(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void refuses_to_advance_by_zero_seconds() throws Exception {
+    @Test
+    public void advancing_by_zero_seconds_is_a_noop() throws Exception {
         ManualJodaClock clock = new ManualJodaClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bumpSeconds(0);
+        assertThat(clock.now(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void refuses_to_advance_by_zero_duration() throws Exception {
+    @Test
+    public void advancing_by_zero_duration_is_a_noop() throws Exception {
         ManualJodaClock clock = new ManualJodaClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bump(Duration.ZERO);
+        assertThat(clock.now(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
     }
 
     @Test(expected = IllegalArgumentException.class)

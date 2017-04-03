@@ -1,6 +1,7 @@
 package com.timgroup.clocks.joda.testing;
 
 import com.timgroup.clocks.joda.JodaClock;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -27,17 +28,20 @@ public final class ManualJodaClock extends JodaClock {
         this.zone = requireNonNull(zone);
     }
 
-    public void bumpSeconds(int secs) {
-        bump(Duration.standardSeconds(secs));
+    public void bumpSeconds(long secs) {
+        bumpMillis(secs * DateTimeConstants.MILLIS_PER_SECOND);
     }
 
     public void bumpMillis(long millis) {
-        bump(Duration.millis(millis));
+        if (millis < 0) {
+            throw new IllegalArgumentException("Duration must be non-negative");
+        }
+        instant = instant.plus(millis);
     }
 
     public void bump(Duration duration) {
-        if (duration.compareTo(Duration.ZERO) <= 0) {
-            throw new IllegalArgumentException("Duration must be positive");
+        if (duration.compareTo(Duration.ZERO) < 0) {
+            throw new IllegalArgumentException("Duration must be non-negative");
         }
         instant = instant.plus(duration);
     }
