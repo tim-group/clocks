@@ -3,6 +3,7 @@ package com.timgroup.clocks.testing;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
@@ -66,6 +67,13 @@ public class ManualClockTest {
         ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         clock.bump(2, ChronoUnit.MINUTES);
         assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:32:00Z")));
+    }
+
+    @Test
+    public void advances_by_period() throws Exception {
+        ManualClock clock = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        clock.bump(Period.ofDays(2));
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-28T18:30:00Z")));
     }
 
     @Test
