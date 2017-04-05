@@ -5,9 +5,7 @@ subprojects {
     apply plugin: 'jarmangit'
 
     group = 'com.timgroup'
-    if (System.getenv('BUILD_NUMBER') != null) {
-        version = "1.0." + System.getenv('BUILD_NUMBER')
-    }
+    if (System.getenv("BUILD_NUMBER")) version = "1.0.${System.getenv('BUILD_NUMBER')}"
 }
 
 ext {
@@ -15,6 +13,16 @@ ext {
 }
 
 subprojects {
+    jar {
+        manifest {
+            attributes(
+                    'Implementation-Title': project.name,
+                    'Implementation-Version': project.version,
+                    'Implementation-Vendor': 'TIM Group Ltd'
+            )
+        }
+    }
+
     tasks.withType(JavaCompile) {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
@@ -24,49 +32,49 @@ subprojects {
         options.compilerArgs << "-parameters"
     }
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
-    }
-
     repositories {
-        if (project.hasProperty('repoUrl')) {
-            maven {
-                name "nexus"
-                url "${project.repoUrl}/groups/public"
-            }
-        } else {
-            mavenCentral()
+        maven {
+            name "nexus"
+            url "${project.repoUrl}/groups/public"
         }
     }
 
-    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
 
-    uploadArchives {
-        if (project.hasProperty('repoUrl')) {
-            repositories {
-                mavenDeployer {
-                    repository(url: "${project.repoUrl}/repositories/yd-release-candidates") {
-                        authentication(userName: project.repoUsername, password: project.repoPassword)
-                    }
+    publishing {
+        repositories {
+            maven {
+                url "${project.repoUrl}/repositories/yd-release-candidates"
+                credentials {
+                    username = project.repoUsername
+                    password = project.repoPassword
+                }
+            }
+        }
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId project.ext.has('artifactId') ? project.ext.artifactId
+                        : project == rootProject ? project.name
+                        : rootProject.name + project.path.replace(':', '-')
+                from components.java
+                artifact(sourcesJar) {
+                    classifier "sources"
                 }
             }
         }
     }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
 }
+
 
 buildscript {
     repositories {
-        if (project.hasProperty('repoUrl')) {
-            maven {
-                url "${project.repoUrl}/groups/public"
-            }
-        } else {
-            mavenCentral()
+        maven {
+            url "${project.repoUrl}/groups/public"
         }
     }
 
