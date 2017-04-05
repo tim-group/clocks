@@ -44,6 +44,7 @@ subprojects {
     publishing {
         repositories {
             maven {
+                name "nexus"
                 url "${project.repoUrl}/repositories/yd-release-candidates"
                 credentials {
                     username = project.repoUsername
@@ -57,9 +58,7 @@ subprojects {
                         : project == rootProject ? project.name
                         : rootProject.name + project.path.replace(':', '-')
                 from components.java
-                artifact(sourcesJar) {
-                    classifier "sources"
-                }
+                artifact(sourcesJar)
             }
         }
     }
