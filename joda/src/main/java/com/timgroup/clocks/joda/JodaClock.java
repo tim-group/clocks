@@ -1,8 +1,5 @@
 package com.timgroup.clocks.joda;
 
-import static java.util.Objects.requireNonNull;
-import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -10,6 +7,9 @@ import java.time.ZoneOffset;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+
+import static java.util.Objects.requireNonNull;
+import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
 
 /**
  * An extended clock that serves as a source of Joda-Time instants and other
@@ -25,7 +25,7 @@ import org.joda.time.DateTimeZone;
  */
 public abstract class JodaClock extends Clock {
     public static JodaClock getDefault() {
-        return new JodaCompatibleClock.DefaultZone();
+        return JodaCompatibleClock.DEFAULT_ZONE;
     }
 
     public static JodaClock using(Clock clock) {

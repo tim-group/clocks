@@ -29,7 +29,12 @@ public abstract class JodaCompatibleClock extends JodaClock {
         return DateTimeUtils.currentTimeMillis();
     }
 
+    public static final DefaultZone DEFAULT_ZONE = new DefaultZone();
+
     public static final class DefaultZone extends JodaCompatibleClock {
+        private DefaultZone() {
+        }
+
         @Override
         public DateTimeZone getDateTimeZone() {
             return DateTimeZone.getDefault();
