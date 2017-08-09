@@ -1,7 +1,7 @@
 subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'java'
-    apply plugin: 'autobumper'
+    apply plugin: 'com.timgroup.autobumper'
     apply plugin: 'jarmangit'
 
     group = 'com.timgroup'
@@ -78,7 +78,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.timgroup:gradle-autobumper:1.0.+"
+        classpath "com.timgroup:gradle-autobumper:1.1.+"
         classpath "com.timgroup:gradle-jarmangit:1.0.+"
     }
 }
