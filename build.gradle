@@ -2,7 +2,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'java'
     apply plugin: 'com.timgroup.autobumper'
-    apply plugin: 'jarmangit'
+    apply plugin: 'com.timgroup.jarmangit'
 
     group = 'com.timgroup'
     if (System.getenv("BUILD_NUMBER")) version = "1.0.${System.getenv('BUILD_NUMBER')}"
@@ -79,6 +79,6 @@ buildscript {
 
     dependencies {
         classpath "com.timgroup:gradle-autobumper:1.1.+"
-        classpath "com.timgroup:gradle-jarmangit:1.0.+"
+        classpath "com.timgroup:gradle-jarmangit:1.1.+"
     }
 }
