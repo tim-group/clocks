@@ -1,3 +1,5 @@
+description = "JSR310 clock implementations for use in testing"
+
 dependencies {
     compile "junit:junit:4.12"
     testCompile "junit:junit:4.12"

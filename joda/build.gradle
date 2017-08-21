@@ -1,3 +1,5 @@
+description = "Extension of java.time.Clock to integration with Joda-Time"
+
 dependencies {
     compile "joda-time:joda-time:$jodaTimeVersion"
     testCompile "junit:junit:4.12"

@@ -1,3 +1,5 @@
+description = "Joda-Clock implementations for use in testing"
+
 dependencies {
     compile "junit:junit:4.12"
     compile project(":joda")

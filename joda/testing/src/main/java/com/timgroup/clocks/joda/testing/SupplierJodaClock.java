@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
  * Typically, the supplier is a lambda, for example:
  * <pre>
  *   private Instant now = Instant.now();
- *   private final JodaClock testClock = SupplierJodaClock.utc(() -> now);
+ *   private final JodaClock testClock = SupplierJodaClock.utc(() -&gt; now);
  * </pre>
  *
  * @see ManualJodaClock

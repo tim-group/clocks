@@ -136,15 +136,14 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     /**
      * Obtain an auto-closeable resource that keeps time frozen as long as it is open.
-     * <p>
-     *     Intended to be used in try-with-resources blocks, e.g.:
+     *
+     * <p>Intended to be used in try-with-resources blocks, e.g.:</p>
      *     <pre>
      *         try (ResetTime.Resource r = resetTime.open()) {
      *             // time frozen here
      *         }
      *         // time unfrozen here
      *     </pre>
-     * </p>
      */
     public Resource open() {
         DateTimeUtils.setCurrentMillisProvider(this::millis);

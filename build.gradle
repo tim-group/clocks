@@ -44,11 +44,7 @@ subprojects {
         repositories {
             maven {
                 name "nexus"
-                url "${project.repoUrl}/repositories/yd-release-candidates"
-                credentials {
-                    username = project.repoUsername
-                    password = project.repoPassword
-                }
+                url "${project.repoUrl}/groups/public"
             }
         }
         publications {
@@ -58,6 +54,29 @@ subprojects {
                         : rootProject.name + project.path.replace(':', '-')
                 from components.java
                 artifact(sourcesJar)
+                artifact(javadocJar)
+                pom.withXml {
+                    asNode().children().last() + {
+                        resolveStrategy = DELEGATE_FIRST
+                        name project.ext.has('pomName') ? project.ext.pomName : project.name
+                        description project.description
+                        url "http://github.com/tim-group/clocks"
+                        licenses {
+                            license {
+                                name 'The BSD 2-Clause License'
+                                url 'http://opensource.org/licenses/BSD-2-Clause'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'steve.haslam@timgroup.com'
+                                name 'Steve Haslam'
+                                email 'steve.haslam@timgroup.com'
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -66,6 +85,15 @@ subprojects {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
+
+    assemble.dependsOn(sourcesJar)
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    assemble.dependsOn(javadocJar)
 }
 
 
