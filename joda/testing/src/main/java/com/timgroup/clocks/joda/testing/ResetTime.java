@@ -13,8 +13,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * JUnit rule for resetting time via Joda-Time.
  */
@@ -40,15 +38,21 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     /**
      * Obtain value from supplier with time frozen.
+     *
+     * @param <T> type to return from supplier
+     * @param supplier code to produce value
+     * @return value produced with time frozen
      */
     public <T> T supply(Supplier<T> supplier) {
-        try (Resource r = open()) {
+        try (Resource ignored = open()) {
             return supplier.get();
         }
     }
 
     /**
      * Run block of code with time frozen.
+     *
+     * @param runnable code to run with time frozen
      */
     public void run(Runnable runnable) {
         try (Resource r = open()) {
@@ -93,7 +97,8 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     /**
      * Advance the fixed time.
-     * <p>
+     *
+     * @param duration Amount to add to current fixed time
      * @see ManualJodaClock#bump
      */
     public void bump(Duration duration) {
@@ -105,7 +110,8 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     /**
      * Advance the fixed time by the given number of milliseconds.
-     * <p>
+     *
+     * @param millis Milliseconds to add to current fixed time
      * @see ManualJodaClock#bumpMillis
      */
     public void bumpMillis(long millis) {
@@ -114,7 +120,8 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     /**
      * Advance the fixed time by the given number of seconds.
-     * <p>
+     *
+     * @param seconds Seconds to add to current fixed time
      * @see ManualJodaClock#bumpSeconds
      */
     public void bumpSeconds(int seconds) {
@@ -123,11 +130,11 @@ public final class ResetTime extends JodaClock implements TestRule {
 
     /**
      * Advance the fixed time to the given instant
-     * <p>
+     *
+     * @param futureInstant Instant to use as current fixed time
      * @see ManualJodaClock#advanceTo
      */
     public void advanceTo(Instant futureInstant) {
-        requireNonNull(futureInstant);
         if (futureInstant.isBefore(now())) {
             throw new IllegalArgumentException("Attempted to move back in time from " + now() + " to " + futureInstant);
         }
@@ -144,6 +151,8 @@ public final class ResetTime extends JodaClock implements TestRule {
      *         }
      *         // time unfrozen here
      *     </pre>
+     *
+     * @return an {@link AutoCloseable} resource
      */
     public Resource open() {
         DateTimeUtils.setCurrentMillisProvider(this::millis);
