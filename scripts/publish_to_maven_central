@@ -39,18 +39,23 @@ for pom in $(find build/repo -name "*.$BUILD_NUMBER.pom"); do
             else
                 gpg -q -ab "$tmpdir/$file"
             fi
+            echo "$file" >> "$tmpdir/files"
+            echo "$file.asc" >> "$tmpdir/files"
         fi
     done
-    
-    files=$( cd "$tmpdir" && echo *.jar *.pom *.jar.asc *.pom.asc )
 
-    args=$( for file in $files; do echo -C "$tmpdir" $file; done )
+    args=$( while read file; do echo -C "$tmpdir" $file; done < "$tmpdir/files" )
 
     jar -cf build/"$bundlefilename" $args
 
-    for file in $files; do
+    while read file; do
         rm "$tmpdir/$file"
-    done
+    done < "$tmpdir/files"
 
-    echo curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" -v -F "file=@build/$bundlefilename" "$nexus_site/service/local/staging/bundle_upload"
+    rm "$tmpdir/files"
+
+    echo $bundlefilename >> "$tmpdir/bundles"
 done
+
+args=$(while read bundlefilename; do echo -F "file=@build/$bundlefilename"; done < "$tmpdir/bundles")
+echo curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" -v $args "$nexus_site/service/local/staging/bundle_upload"
