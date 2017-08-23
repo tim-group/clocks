@@ -25,4 +25,8 @@ for pom in $(find build/repo -name "*.$BUILD_NUMBER.pom"); do
     args=$( for file in $files; do echo -C "$tmpdir" $file; done )
 
     jar -cvf build/"$bundlefilename" $args
+
+    for file in $files; do
+        rm "$tmpdir/$file"
+    done
 done
