@@ -58,4 +58,15 @@ for pom in $(find build/repo -name "*.$BUILD_NUMBER.pom"); do
 done
 
 args=$(while read bundlefilename; do echo -F "file=@build/$bundlefilename"; done < "$tmpdir/bundles")
-echo curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" -v $args "$nexus_site/service/local/staging/bundle_upload"
+curl -o "$tmpdir/response.json" -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" -v $args "$nexus_site/service/local/staging/bundle_upload"
+
+#echo '{"repositoryUris":["https://oss.sonatype.org/content/repositories/comtimgroup-1048","https://oss.sonatype.org/content/repositories/comtimgroup-1049"]}' > "$tmpdir/response.json"
+
+repositoryUrls=$( perl -w -MJSON::PP=decode_json -e 'undef $/; $r = decode_json(<STDIN>); for (@{$r->{repositoryUris}}) { print "$_\n" } ' < "$tmpdir/response.json" )
+
+echo "Uploaded bundles and created these staging repositories:"
+echo ""
+
+for url in $repositoryUrls; do
+    echo "  $url"
+done
