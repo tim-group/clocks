@@ -46,6 +46,10 @@ subprojects {
                 name "nexus"
                 url "${project.repoUrl}/groups/public"
             }
+            maven {
+                name "localFiles"
+                url "${rootProject.buildDir}/repo"
+            }
         }
         publications {
             mavenJava(MavenPublication) {

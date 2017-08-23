@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -e
+
+# BUILD_NUMBER should be set
+
+./gradlew publishMavenJavaPublicationToLocalFilesRepository
+
+tmpdir=$(TMPDIR=build mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+for pom in $(find build/repo -name "*.$BUILD_NUMBER.pom"); do
+    pomdir=$(dirname "$pom")
+    basename=$(basename "$pom" .pom)
+    ln "$pom" \
+	"$pomdir/$basename.jar" \
+	"$pomdir/$basename-javadoc.jar" \
+	"$pomdir/$basename-sources.jar" \
+	"$tmpdir"
+done
+
+for file in "$tmpdir"/*.pom "$tmpdir"/*.jar; do
+    gpg -ab "$file"
+done
+
+files=$( cd "$tmpdir" && echo *.jar *.pom *.jar.asc *.pom.asc )
+
+args=$( for file in $files; do echo -C "$tmpdir" $file; done )
+
+jar -cvf build/bundle.jar $args
