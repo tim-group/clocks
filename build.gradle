@@ -45,10 +45,10 @@ subprojects {
             maven {
                 name "nexus"
                 url "${project.repoUrl}/groups/public"
-		credentials {
-		    username = project.repoUsername
-		    password = project.repoPassword
-		}
+                credentials {
+                    username = project.repoUsername
+                    password = project.repoPassword
+                }
             }
             maven {
                 name "localFiles"
