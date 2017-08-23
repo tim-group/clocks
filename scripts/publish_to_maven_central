@@ -2,7 +2,25 @@
 
 set -e
 
-# BUILD_NUMBER should be set
+# environment variables should be set:
+# BUILD_NUMBER
+# NEXUS_USERNAME
+# NEXUS_PASSWORD
+
+# optional:
+# NEXUS_SITE (defaults to Sonatype)
+# KEY_ID (GnuPG signer, defaults to GnuPG default, probably first secret key found)
+
+die() {
+  echo "$0: $*" >&1
+  exit 1
+}
+
+[ -n "$BUILD_NUMBER" ] || die "BUILD_NUMBER not specified"
+[ -n "$NEXUS_USERNAME" ] || die "NEXUS_USERNAME not specified"
+[ -n "$NEXUS_PASSWORD" ] || die "NEXUS_PASSWORD not specified"
+
+nexus_site="${NEXUS_SITE-https://oss.sonatype.org}"
 
 ./gradlew publishMavenJavaPublicationToLocalFilesRepository
 
@@ -14,19 +32,25 @@ for pom in $(find build/repo -name "*.$BUILD_NUMBER.pom"); do
     basename=$(basename "$pom" .pom)
     bundlefilename="$basename-bundle.jar"
     for file in "$basename.pom" "$basename.jar" "$basename-javadoc.jar" "$basename-sources.jar"; do
-	if [ -f "$pomdir/$file" ]; then
-	    ln "$pomdir/$file" "$tmpdir"
-	    gpg -ab "$tmpdir/$file"
-	fi
+        if [ -f "$pomdir/$file" ]; then
+            ln "$pomdir/$file" "$tmpdir"
+            if [ -n "$KEY_ID" ]; then
+                gpg -q -ab -u "$KEY_ID" "$tmpdir/$file"
+            else
+                gpg -q -ab "$tmpdir/$file"
+            fi
+        fi
     done
     
     files=$( cd "$tmpdir" && echo *.jar *.pom *.jar.asc *.pom.asc )
 
     args=$( for file in $files; do echo -C "$tmpdir" $file; done )
 
-    jar -cvf build/"$bundlefilename" $args
+    jar -cf build/"$bundlefilename" $args
 
     for file in $files; do
         rm "$tmpdir/$file"
     done
+
+    echo curl -u "$NEXUS_USERNAME:$NEXUS_PASSWORD" -v -F "file=@build/$bundlefilename" "$nexus_site/service/local/staging/bundle_upload"
 done
