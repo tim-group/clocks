@@ -44,7 +44,7 @@ subprojects {
         repositories {
             maven {
                 name "nexus"
-                url "${project.repoUrl}/groups/public"
+                url "${project.repoUrl}/repositories/yd-release-candidates"
                 credentials {
                     username = project.repoUsername
                     password = project.repoPassword
