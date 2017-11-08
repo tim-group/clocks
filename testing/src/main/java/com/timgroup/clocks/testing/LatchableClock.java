@@ -55,6 +55,7 @@ public final class LatchableClock extends Clock {
 
     @Override
     public Clock withZone(ZoneId zone) {
+        requireNonNull(zone);
         return new Clock() {
             @Override
             public Instant instant() {

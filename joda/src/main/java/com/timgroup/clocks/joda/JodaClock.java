@@ -29,7 +29,6 @@ public abstract class JodaClock extends Clock {
     }
 
     public static JodaClock using(Clock clock) {
-        requireNonNull(clock);
         if (clock instanceof JodaClock) {
             return (JodaClock) clock;
         }
@@ -44,7 +43,6 @@ public abstract class JodaClock extends Clock {
     }
 
     public static DateTimeZone toDateTimeZone(ZoneId zoneId) {
-        requireNonNull(zoneId);
         if (zoneId == ZoneOffset.UTC) {
             return DateTimeZone.UTC;
         }
@@ -90,7 +88,6 @@ public abstract class JodaClock extends Clock {
     }
 
     public static ZoneId toZoneId(DateTimeZone jodaTimeZone) {
-        requireNonNull(jodaTimeZone);
         if (jodaTimeZone == DateTimeZone.UTC) {
             return ZoneOffset.UTC;
         }
@@ -126,7 +123,7 @@ public abstract class JodaClock extends Clock {
 
         @Override
         public JodaClock withZone(DateTimeZone jodaTimeZone) {
-            ZoneId zoneId = toZoneId(requireNonNull(jodaTimeZone));
+            ZoneId zoneId = toZoneId(jodaTimeZone);
             Clock newClock = clock.withZone(zoneId);
             if (newClock == clock) {
                 return this;

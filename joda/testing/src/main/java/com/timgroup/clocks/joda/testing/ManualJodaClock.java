@@ -47,7 +47,6 @@ public final class ManualJodaClock extends JodaClock {
     }
 
     public void advanceTo(Instant futureInstant) {
-        requireNonNull(futureInstant);
         if (futureInstant.isBefore(instant)) {
             throw new IllegalArgumentException("Instant must not be before the current time");
         }
@@ -66,7 +65,6 @@ public final class ManualJodaClock extends JodaClock {
 
     @Override
     public JodaClock withZone(DateTimeZone overrideZone) {
-        requireNonNull(overrideZone);
         if (overrideZone.equals(zone)) {
             return this;
         }

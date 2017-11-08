@@ -66,7 +66,6 @@ public final class ManualClock extends Clock {
     }
 
     public void advanceTo(Instant futureInstant) {
-        requireNonNull(futureInstant);
         if (futureInstant.isBefore(instant)) {
             throw new IllegalArgumentException("Instant must not be before the current time");
         }
@@ -85,7 +84,6 @@ public final class ManualClock extends Clock {
 
     @Override
     public Clock withZone(ZoneId overrideZone) {
-        requireNonNull(overrideZone);
         if (overrideZone.equals(zone)) {
             return this;
         }

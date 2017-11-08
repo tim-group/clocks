@@ -13,6 +13,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * JUnit rule for resetting time via Joda-Time.
  */
@@ -21,8 +23,8 @@ public final class ResetTime extends JodaClock implements TestRule {
     private Instant instant;
 
     private ResetTime(Instant timeToResetTo, DateTimeZone timeZone) {
-        this.instant = timeToResetTo;
-        this.timeZone = timeZone;
+        this.instant = requireNonNull(timeToResetTo);
+        this.timeZone = requireNonNull(timeZone);
     }
 
     @Override
