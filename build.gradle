@@ -1,7 +1,9 @@
 subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'java'
-    apply plugin: 'com.timgroup.jarmangit'
+    if (project.hasProperty("repoUrl")) {
+        apply plugin: 'com.timgroup.jarmangit'
+    }
 
     group = 'com.timgroup'
     if (System.getenv("BUILD_NUMBER")) version = "1.0.${System.getenv('BUILD_NUMBER')}"
@@ -32,9 +34,14 @@ subprojects {
     }
 
     repositories {
-        maven {
-            name "nexus"
-            url "${project.repoUrl}/groups/public"
+        if (project.hasProperty("repoUrl")) {
+            maven {
+                name "nexus"
+                url "${project.repoUrl}/groups/public"
+            }
+        }
+        else {
+            mavenCentral()
         }
     }
 
@@ -42,12 +49,14 @@ subprojects {
 
     publishing {
         repositories {
-            maven {
-                name "nexus"
-                url "${project.repoUrl}/repositories/yd-release-candidates"
-                credentials {
-                    username = project.repoUsername
-                    password = project.repoPassword
+            if (project.hasProperty("repoUrl")) {
+                maven {
+                    name "nexus"
+                    url "${project.repoUrl}/repositories/yd-release-candidates"
+                    credentials {
+                        username = project.repoUsername
+                        password = project.repoPassword
+                    }
                 }
             }
             maven {
@@ -106,13 +115,15 @@ subprojects {
 
 
 buildscript {
-    repositories {
-        maven {
-            url "${project.repoUrl}/groups/public"
+    if (project.hasProperty("repoUrl")) {
+        repositories {
+            maven {
+                url "${project.repoUrl}/groups/public"
+            }
         }
-    }
 
-    dependencies {
-        classpath "com.timgroup:gradle-jarmangit:1.1.+"
+        dependencies {
+            classpath "com.timgroup:gradle-jarmangit:1.1.+"
+        }
     }
 }
