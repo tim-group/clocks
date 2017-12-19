@@ -1,6 +1,8 @@
 Clocks
 ======
 
+[![Build Status](https://travis-ci.org/tim-group/clocks.svg?branch=master)](https://travis-ci.org/tim-group/clocks)
+
 Implementations of JSR310's java.time.Clock to help with testing,
 and for integration with Joda-Time.
 
