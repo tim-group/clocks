@@ -1,19 +1,19 @@
-subprojects {
-    apply plugin: 'eclipse'
-    apply plugin: 'java'
-    if (project.hasProperty("repoUrl")) {
-        apply plugin: 'com.timgroup.jarmangit'
-    }
-
-    group = 'com.timgroup'
-    if (System.getenv("BUILD_NUMBER")) version = "1.0.${System.getenv('BUILD_NUMBER')}"
+plugins {
+    id "com.timgroup.jarmangit" version "1.1.84"
 }
 
 ext {
     jodaTimeVersion = '2.9.9'
 }
 
+allprojects {
+    group = 'com.timgroup'
+    if (System.getenv("BUILD_NUMBER")) version = "1.0.${System.getenv('BUILD_NUMBER')}"
+}
+
 subprojects {
+    apply plugin: "java"
+
     jar {
         manifest {
             attributes(
@@ -24,7 +24,7 @@ subprojects {
         }
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).all {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
         options.encoding = "UTF-8"
@@ -34,15 +34,7 @@ subprojects {
     }
 
     repositories {
-        if (project.hasProperty("repoUrl")) {
-            maven {
-                name "nexus"
-                url "${project.repoUrl}/groups/public"
-            }
-        }
-        else {
-            mavenCentral()
-        }
+        mavenCentral()
     }
 
     apply plugin: 'maven-publish'
@@ -58,10 +50,6 @@ subprojects {
                         password = project.repoPassword
                     }
                 }
-            }
-            maven {
-                name "localFiles"
-                url "${rootProject.buildDir}/repo"
             }
         }
         publications {
@@ -111,19 +99,4 @@ subprojects {
     }
 
     assemble.dependsOn(javadocJar)
-}
-
-
-buildscript {
-    if (project.hasProperty("repoUrl")) {
-        repositories {
-            maven {
-                url "${project.repoUrl}/groups/public"
-            }
-        }
-
-        dependencies {
-            classpath "com.timgroup:gradle-jarmangit:1.1.+"
-        }
-    }
 }
