@@ -1,4 +1,4 @@
-description = "Extension of java.time.Clock to integration with Joda-Time"
+description = "Extension of java.time.Clock to integrate with Joda-Time"
 
 dependencies {
     compile "joda-time:joda-time:$jodaTimeVersion"
