@@ -14,8 +14,9 @@ allprojects {
 subprojects {
     apply plugin: "java"
     apply plugin: "com.timgroup.jarmangit"
+    apply plugin: 'maven-publish'
 
-    jar {
+    tasks.withType(Jar).all {
         manifest {
             attributes(
                     'Implementation-Title': project.name,
@@ -38,13 +39,10 @@ subprojects {
         mavenCentral()
     }
 
-    apply plugin: 'maven-publish'
-
     publishing {
         repositories {
             if (project.hasProperty("repoUrl")) {
                 maven {
-                    name "nexus"
                     url "${project.repoUrl}/repositories/yd-release-candidates"
                     credentials {
                         username = project.repoUsername
