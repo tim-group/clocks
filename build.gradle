@@ -39,6 +39,20 @@ subprojects {
         mavenCentral()
     }
 
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    assemble.dependsOn(sourcesJar)
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    assemble.dependsOn(javadocJar)
+
     publishing {
         repositories {
             if (project.hasProperty("repoUrl")) {
@@ -84,18 +98,4 @@ subprojects {
             }
         }
     }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    assemble.dependsOn(sourcesJar)
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
-    assemble.dependsOn(javadocJar)
 }
