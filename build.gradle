@@ -3,7 +3,7 @@ plugins {
 }
 
 ext {
-    jodaTimeVersion = '2.9.9'
+    jodaTimeVersion = '2.10.1'
 }
 
 allprojects {
