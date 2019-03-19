@@ -22,12 +22,12 @@ die() {
 
 nexus_site="${NEXUS_SITE-https://oss.sonatype.org}"
 
-./gradlew publishMavenJavaPublicationToLocalFilesRepository
+./gradlew publishMavenJavaPublicationToMavenLocal
 
 tmpdir=$(TMPDIR=build mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT
 
-for pom in $(find build/repo -name "*.$BUILD_NUMBER.pom"); do
+for pom in $(find $HOME/.m2/repository/com/timgroup/clocks* -name "*.$BUILD_NUMBER.pom"); do
     pomdir=$(dirname "$pom")
     basename=$(basename "$pom" .pom)
     bundlefilename="$basename-bundle.jar"
