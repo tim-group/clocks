@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,7 +15,7 @@ import static java.util.Objects.requireNonNull;
  */
 public final class LatchableClock extends Clock {
     private final Clock delegate;
-    private Instant fixedInstant;
+    private AtomicReference<Instant> fixedInstantRef = new AtomicReference<>(null);
 
     public LatchableClock(Clock delegate) {
         this.delegate = requireNonNull(delegate);
@@ -22,6 +23,7 @@ public final class LatchableClock extends Clock {
 
     @Override
     public Instant instant() {
+        Instant fixedInstant = fixedInstantRef.get();
         if (fixedInstant != null) {
             return fixedInstant;
         }
@@ -30,6 +32,7 @@ public final class LatchableClock extends Clock {
 
     @Override
     public long millis() {
+        Instant fixedInstant = fixedInstantRef.get();
         if (fixedInstant != null) {
             return fixedInstant.toEpochMilli();
         }
@@ -42,15 +45,15 @@ public final class LatchableClock extends Clock {
     }
 
     public void latch() {
-        fixedInstant = instant();
+        fixedInstantRef.set(instant());
     }
 
     public void latchTo(Instant instant) {
-        fixedInstant = instant;
+        fixedInstantRef.set(instant);
     }
 
     public void unlatch() {
-        fixedInstant = null;
+        fixedInstantRef.set(null);
     }
 
     @Override
@@ -88,14 +91,16 @@ public final class LatchableClock extends Clock {
         if (duration.isNegative() || duration.isZero()) {
             throw new IllegalArgumentException("Duration must be positive");
         }
+        Instant fixedInstant = fixedInstantRef.get();
         if (fixedInstant == null) {
             throw new IllegalStateException("Clock must be latched");
         }
-        fixedInstant = fixedInstant.plus(duration);
+        fixedInstantRef.set(fixedInstant.plus(duration));
     }
 
     @Override
     public String toString() {
+        Instant fixedInstant = fixedInstantRef.get();
         if (fixedInstant == null) {
             return "LatchableClock:" + delegate;
         }
