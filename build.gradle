@@ -2,10 +2,6 @@ plugins {
     id "com.timgroup.jarmangit" version "1.1.86"
 }
 
-ext {
-    jodaTimeVersion = '2.10.1'
-}
-
 allprojects {
     group = 'com.timgroup'
     if (System.getenv("BUILD_NUMBER")) version = "1.0.${System.getenv('BUILD_NUMBER')}"
