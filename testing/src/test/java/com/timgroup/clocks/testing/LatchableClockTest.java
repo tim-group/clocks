@@ -1,14 +1,15 @@
 package com.timgroup.clocks.testing;
 
-import static java.time.ZoneOffset.UTC;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import org.junit.Test;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
-import org.junit.Test;
+import static java.time.ZoneOffset.UTC;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class LatchableClockTest {
     @Test
@@ -19,6 +20,17 @@ public class LatchableClockTest {
         assertThat(clock.getZone(), equalTo(UTC));
         underlying.bumpSeconds(1);
         assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:01Z")));
+        assertThat(clock.getZone(), equalTo(UTC));
+    }
+
+    @Test
+    public void can_be_latched_on_construction() throws Exception {
+        ManualClock underlying = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        LatchableClock clock = new LatchableClock(underlying, underlying.instant(), false);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
+        assertThat(clock.getZone(), equalTo(UTC));
+        underlying.bumpSeconds(1);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T18:30:00Z")));
         assertThat(clock.getZone(), equalTo(UTC));
     }
 
@@ -69,6 +81,15 @@ public class LatchableClockTest {
         ManualClock underlying = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         LatchableClock clock = new LatchableClock(underlying);
         clock.bump(Duration.ofSeconds(1));
+    }
+
+    @Test
+    public void unlatching_clock_recalculates_offset_using_fixed_instant() throws Exception {
+        ManualClock underlying = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        LatchableClock clock = new LatchableClock(underlying, Instant.parse("2016-08-26T17:30:00Z"), false);
+        clock.unlatch();
+        underlying.bumpSeconds(1);
+        assertThat(clock.instant(), equalTo(Instant.parse("2016-08-26T17:30:01Z")));
     }
 
     @Test

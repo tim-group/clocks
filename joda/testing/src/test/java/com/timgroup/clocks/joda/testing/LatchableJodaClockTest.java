@@ -1,17 +1,16 @@
 package com.timgroup.clocks.joda.testing;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.joda.time.DateTimeZone.UTC;
-import static org.joda.time.Duration.millis;
-import static org.joda.time.Duration.standardSeconds;
-
+import com.timgroup.clocks.joda.JodaClock;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.Test;
 
-import com.timgroup.clocks.joda.JodaClock;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.joda.time.DateTimeZone.UTC;
+import static org.joda.time.Duration.millis;
+import static org.joda.time.Duration.standardSeconds;
 
 public class LatchableJodaClockTest {
     @Test
@@ -72,6 +71,15 @@ public class LatchableJodaClockTest {
         ManualJodaClock underlying = new ManualJodaClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         LatchableJodaClock clock = new LatchableJodaClock(underlying);
         clock.bump(standardSeconds(1));
+    }
+
+    @Test
+    public void unlatching_clock_recalculates_offset_using_fixed_instant() throws Exception {
+        ManualJodaClock underlying = new ManualJodaClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
+        LatchableJodaClock clock = new LatchableJodaClock(underlying, Instant.parse("2016-08-26T17:30:00Z"), false);
+        clock.unlatch();
+        underlying.bumpSeconds(1);
+        assertThat(clock.now(), equalTo(Instant.parse("2016-08-26T17:30:01Z")));
     }
 
     @Test

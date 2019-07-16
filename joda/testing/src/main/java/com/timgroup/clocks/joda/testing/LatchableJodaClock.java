@@ -8,32 +8,45 @@ import org.joda.time.Instant;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Clock that can be either free-running or latched to some fixed instant.
+ * Clock that can be latched to some fixed instant, or offset from a running clock.
  *
  * @see ManualJodaClock
  */
 public final class LatchableJodaClock extends JodaClock {
     private final JodaClock delegate;
     private Instant fixedInstant;
+    private Duration delegateClockOffset;
 
     public LatchableJodaClock(JodaClock delegate) {
         this.delegate = requireNonNull(delegate);
     }
 
-    @Override
-    public Instant now() {
-        if (fixedInstant != null) {
-            return fixedInstant;
+    public LatchableJodaClock(JodaClock delegate, Instant initialInstant, boolean running) {
+        this.delegate = requireNonNull(delegate);
+        if (running) {
+            this.fixedInstant = null;
+            this.delegateClockOffset = new Duration(initialInstant, delegate.now());
         }
-        return delegate.now();
+        else {
+            this.fixedInstant = initialInstant;
+            this.delegateClockOffset = null;
+        }
     }
 
     @Override
-    public long millis() {
+    public synchronized Instant now() {
+        if (fixedInstant != null) {
+            return fixedInstant;
+        }
+        return delegate.now().minus(delegateClockOffset);
+    }
+
+    @Override
+    public synchronized long millis() {
         if (fixedInstant != null) {
             return fixedInstant.getMillis();
         }
-        return delegate.millis();
+        return delegate.millis() - delegateClockOffset.getMillis();
     }
 
     @Override
@@ -42,15 +55,19 @@ public final class LatchableJodaClock extends JodaClock {
     }
 
     public void latch() {
-        fixedInstant = now();
+        latchTo(now());
     }
 
-    public void latchTo(Instant instant) {
-        fixedInstant = instant;
+    public synchronized void latchTo(Instant instant) {
+        this.fixedInstant = instant;
+        this.delegateClockOffset = null;
     }
 
-    public void unlatch() {
-        fixedInstant = null;
+    public synchronized void unlatch() {
+        if (fixedInstant != null) {
+            delegateClockOffset = new Duration(fixedInstant, delegate.now());
+            fixedInstant = null;
+        }
     }
 
     @Override
@@ -84,7 +101,7 @@ public final class LatchableJodaClock extends JodaClock {
         };
     }
 
-    public void bump(Duration duration) {
+    public synchronized void bump(Duration duration) {
         if (duration.compareTo(Duration.ZERO) <= 0) {
             throw new IllegalArgumentException("Duration must be positive");
         }
@@ -95,9 +112,9 @@ public final class LatchableJodaClock extends JodaClock {
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         if (fixedInstant == null) {
-            return "LatchableClock:" + delegate;
+            return "LatchableClock:" + delegate + "-" + delegateClockOffset;
         }
         else {
             return "LatchableClock:@" + fixedInstant;

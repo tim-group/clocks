@@ -4,39 +4,49 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Clock that can be either free-running or latched to some fixed instant.
+ * Clock that can be latched to some fixed instant, or offset from a running clock.
  *
  * @see ManualClock
  */
 public final class LatchableClock extends Clock {
     private final Clock delegate;
-    private AtomicReference<Instant> fixedInstantRef = new AtomicReference<>(null);
+    private Instant fixedInstant;
+    private Duration delegateClockOffset;
 
     public LatchableClock(Clock delegate) {
+        this(delegate, delegate.instant(), true);
+    }
+
+    public LatchableClock(Clock delegate, Instant initialInstant, boolean running) {
         this.delegate = requireNonNull(delegate);
+        if (running) {
+            this.fixedInstant = null;
+            this.delegateClockOffset = Duration.between(initialInstant, delegate.instant());
+        }
+        else {
+            this.fixedInstant = initialInstant;
+            this.delegateClockOffset = null;
+        }
     }
 
     @Override
-    public Instant instant() {
-        Instant fixedInstant = fixedInstantRef.get();
+    public synchronized Instant instant() {
         if (fixedInstant != null) {
             return fixedInstant;
         }
-        return delegate.instant();
+        return delegate.instant().minus(delegateClockOffset);
     }
 
     @Override
-    public long millis() {
-        Instant fixedInstant = fixedInstantRef.get();
+    public synchronized long millis() {
         if (fixedInstant != null) {
             return fixedInstant.toEpochMilli();
         }
-        return delegate.millis();
+        return delegate.millis() - delegateClockOffset.toMillis();
     }
 
     @Override
@@ -44,16 +54,20 @@ public final class LatchableClock extends Clock {
         return delegate.getZone();
     }
 
-    public void latch() {
-        fixedInstantRef.set(instant());
+    public synchronized void latch() {
+        latchTo(instant());
     }
 
-    public void latchTo(Instant instant) {
-        fixedInstantRef.set(instant);
+    public synchronized void latchTo(Instant instant) {
+        this.fixedInstant = instant;
+        this.delegateClockOffset = null;
     }
 
-    public void unlatch() {
-        fixedInstantRef.set(null);
+    public synchronized void unlatch() {
+        if (fixedInstant != null) {
+            delegateClockOffset = Duration.between(fixedInstant, delegate.instant());
+            fixedInstant = null;
+        }
     }
 
     @Override
@@ -87,22 +101,20 @@ public final class LatchableClock extends Clock {
         };
     }
 
-    public void bump(Duration duration) {
+    public synchronized void bump(Duration duration) {
         if (duration.isNegative() || duration.isZero()) {
             throw new IllegalArgumentException("Duration must be positive");
         }
-        Instant fixedInstant = fixedInstantRef.get();
         if (fixedInstant == null) {
             throw new IllegalStateException("Clock must be latched");
         }
-        fixedInstantRef.set(fixedInstant.plus(duration));
+        fixedInstant = fixedInstant.plus(duration);
     }
 
     @Override
-    public String toString() {
-        Instant fixedInstant = fixedInstantRef.get();
+    public synchronized String toString() {
         if (fixedInstant == null) {
-            return "LatchableClock:" + delegate;
+            return "LatchableClock:" + delegate + "-" + delegateClockOffset;
         }
         else {
             return "LatchableClock:@" + fixedInstant;
