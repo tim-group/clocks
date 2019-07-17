@@ -23,6 +23,7 @@ public final class LatchableJodaClock extends JodaClock {
 
     public LatchableJodaClock(JodaClock delegate, Instant initialInstant, boolean running) {
         this.delegate = requireNonNull(delegate);
+        requireNonNull(initialInstant);
         if (running) {
             this.fixedInstant = null;
             this.delegateClockOffset = new Duration(initialInstant, delegate.now());

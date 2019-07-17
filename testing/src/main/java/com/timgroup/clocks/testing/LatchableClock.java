@@ -23,6 +23,7 @@ public final class LatchableClock extends Clock {
 
     public LatchableClock(Clock delegate, Instant initialInstant, boolean running) {
         this.delegate = requireNonNull(delegate);
+        requireNonNull(initialInstant);
         if (running) {
             this.fixedInstant = null;
             this.delegateClockOffset = Duration.between(initialInstant, delegate.instant());
