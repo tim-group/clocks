@@ -12,7 +12,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @see ManualJodaClock
  */
-public final class LatchableJodaClock extends JodaClock {
+public final class LatchableJodaClock extends JodaClock implements MutableJodaClock {
     private final JodaClock delegate;
     private Instant fixedInstant;
     private Duration delegateClockOffset;
@@ -110,6 +110,14 @@ public final class LatchableJodaClock extends JodaClock {
             throw new IllegalStateException("Clock must be latched");
         }
         fixedInstant = fixedInstant.plus(duration);
+    }
+
+    @Override
+    public synchronized void advanceTo(Instant futureInstant) {
+        if (futureInstant.isBefore(now())) {
+            throw new IllegalArgumentException("Instant must not be before the current time");
+        }
+        latchTo(futureInstant);
     }
 
     @Override

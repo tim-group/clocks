@@ -61,14 +61,6 @@ public class LatchableClockTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void latched_clock_cannot_be_advanced_by_zero() throws Exception {
-        ManualClock underlying = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
-        LatchableClock clock = new LatchableClock(underlying);
-        clock.latchTo(Instant.parse("2016-08-26T19:00:00Z"));
-        clock.bump(Duration.ZERO);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void latched_clock_cannot_be_advanced_by_negative_duration() throws Exception {
         ManualClock underlying = new ManualClock(Instant.parse("2016-08-26T18:30:00Z"), UTC);
         LatchableClock clock = new LatchableClock(underlying);

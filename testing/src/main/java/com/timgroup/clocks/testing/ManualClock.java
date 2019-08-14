@@ -1,18 +1,16 @@
 package com.timgroup.clocks.testing;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Clock that only updates in positive increments when called directly.
  */
-public final class ManualClock extends Clock {
+public final class ManualClock extends Clock implements MutableClock {
     private Instant instant;
     private final ZoneId zone;
 
@@ -29,27 +27,7 @@ public final class ManualClock extends Clock {
         this.zone = requireNonNull(zone);
     }
 
-    public void bump(long amountToAdd, TemporalUnit unit) {
-        if (amountToAdd < 0) {
-            throw new IllegalArgumentException("Duration must be non-negative");
-        }
-        instant = instant.plus(amountToAdd, unit);
-    }
-
-    public void bumpSeconds(int secs) {
-        if (secs < 0) {
-            throw new IllegalArgumentException("Duration must be non-negative");
-        }
-        instant = instant.plusSeconds(secs);
-    }
-
-    public void bumpMillis(long millis) {
-        if (millis < 0) {
-            throw new IllegalArgumentException("Duration must be non-negative");
-        }
-        instant = instant.plusMillis(millis);
-    }
-
+    @Override
     public void bump(TemporalAmount amountToAdd) {
         Instant newInstant = instant.plus(amountToAdd);
         if (newInstant.isBefore(instant)) {
@@ -58,13 +36,7 @@ public final class ManualClock extends Clock {
         instant = newInstant;
     }
 
-    public void bump(Duration duration) {
-        if (duration.isNegative()) {
-            throw new IllegalArgumentException("Duration must be non-negative");
-        }
-        instant = instant.plus(duration);
-    }
-
+    @Override
     public void advanceTo(Instant futureInstant) {
         if (futureInstant.isBefore(instant)) {
             throw new IllegalArgumentException("Instant must not be before the current time");

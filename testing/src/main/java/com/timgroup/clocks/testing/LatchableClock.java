@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAmount;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,7 +13,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @see ManualClock
  */
-public final class LatchableClock extends Clock {
+public final class LatchableClock extends Clock implements MutableClock {
     private final Clock delegate;
     private Instant fixedInstant;
     private Duration delegateClockOffset;
@@ -102,14 +103,23 @@ public final class LatchableClock extends Clock {
         };
     }
 
-    public synchronized void bump(Duration duration) {
-        if (duration.isNegative() || duration.isZero()) {
-            throw new IllegalArgumentException("Duration must be positive");
-        }
+    public synchronized void bump(TemporalAmount duration) {
         if (fixedInstant == null) {
             throw new IllegalStateException("Clock must be latched");
         }
+        Instant newInstant = fixedInstant.plus(duration);
+        if (newInstant.isBefore(fixedInstant)) {
+            throw new IllegalArgumentException("Duration must be positive");
+        }
         fixedInstant = fixedInstant.plus(duration);
+    }
+
+    @Override
+    public synchronized void advanceTo(Instant futureInstant) {
+        if (futureInstant.isBefore(instant())) {
+            throw new IllegalArgumentException("Instant must not be before the current time");
+        }
+        latchTo(futureInstant);
     }
 
     @Override
