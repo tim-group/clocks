@@ -12,7 +12,7 @@ subprojects {
     apply plugin: "com.timgroup.jarmangit"
     apply plugin: 'maven-publish'
 
-    tasks.withType(Jar).all {
+    tasks.withType(Jar).configureEach {
         manifest {
             attributes(
                     'Implementation-Title': project.name,
@@ -22,7 +22,7 @@ subprojects {
         }
     }
 
-    tasks.withType(JavaCompile).all {
+    tasks.withType(JavaCompile).configureEach {
         sourceCompatibility = "1.8"
         targetCompatibility = "1.8"
         options.encoding = "UTF-8"
@@ -35,19 +35,22 @@ subprojects {
         mavenCentral()
     }
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
+    tasks.register("sourcesJar", Jar) {
+        dependsOn("classes")
         classifier = 'sources'
         from sourceSets.main.allSource
     }
 
-    assemble.dependsOn(sourcesJar)
-
-    task javadocJar(type: Jar, dependsOn: javadoc) {
+    tasks.register("javadocJar", Jar) {
+        dependsOn("javadoc")
         classifier = 'javadoc'
         from javadoc.destinationDir
     }
 
-    assemble.dependsOn(javadocJar)
+    tasks.named("assemble").configure {
+        dependsOn("sourcesJar")
+        dependsOn("javadocJar")
+    }
 
     publishing {
         repositories {
@@ -67,8 +70,8 @@ subprojects {
                         : project == rootProject ? project.name
                         : rootProject.name + project.path.replace(':', '-')
                 from components.java
-                artifact(sourcesJar)
-                artifact(javadocJar)
+                artifact(tasks.sourcesJar)
+                artifact(tasks.javadocJar)
                 pom.withXml {
                     asNode().children().last() + {
                         resolveStrategy = DELEGATE_FIRST
