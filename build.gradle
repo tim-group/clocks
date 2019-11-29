@@ -35,21 +35,9 @@ subprojects {
         mavenCentral()
     }
 
-    tasks.register("sourcesJar", Jar) {
-        dependsOn("classes")
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    tasks.register("javadocJar", Jar) {
-        dependsOn("javadoc")
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
-
-    tasks.named("assemble").configure {
-        dependsOn("sourcesJar")
-        dependsOn("javadocJar")
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     publishing {
@@ -70,8 +58,6 @@ subprojects {
                         : project == rootProject ? project.name
                         : rootProject.name + project.path.replace(':', '-')
                 from components.java
-                artifact(tasks.sourcesJar)
-                artifact(tasks.javadocJar)
                 pom.withXml {
                     asNode().children().last() + {
                         resolveStrategy = DELEGATE_FIRST
