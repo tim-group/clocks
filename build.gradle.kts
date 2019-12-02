@@ -23,8 +23,6 @@ subprojects {
     }
 
     tasks.withType<JavaCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
         options.encoding = "UTF-8"
         options.isIncremental = true
         options.isDeprecation = true
@@ -38,6 +36,8 @@ subprojects {
     the<JavaPluginExtension>().apply {
         withJavadocJar()
         withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     afterEvaluate {
