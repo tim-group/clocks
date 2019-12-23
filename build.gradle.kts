@@ -1,5 +1,5 @@
 plugins {
-    id("com.timgroup.jarmangit") version "1.1.113"
+    id("com.timgroup.jarmangit") version "1.1.117"
 }
 
 allprojects {
