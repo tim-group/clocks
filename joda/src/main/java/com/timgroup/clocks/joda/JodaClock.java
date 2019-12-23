@@ -1,12 +1,13 @@
 package com.timgroup.clocks.joda;
 
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
+import org.joda.time.ReadableInstant;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
 
 import static java.util.Objects.requireNonNull;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
@@ -33,6 +34,10 @@ public abstract class JodaClock extends Clock {
             return (JodaClock) clock;
         }
         return new Delegating(clock);
+    }
+
+    public static JodaClock fixed(ReadableInstant instant, DateTimeZone timeZone) {
+        return new FixedJodaClock(instant.toInstant(), timeZone);
     }
 
     public abstract DateTimeZone getDateTimeZone();

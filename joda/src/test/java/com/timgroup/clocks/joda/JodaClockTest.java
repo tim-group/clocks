@@ -1,5 +1,13 @@
 package com.timgroup.clocks.joda;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
+import org.junit.Test;
+
+import java.time.Clock;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -7,13 +15,6 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_HOUR;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_MINUTE;
 import static org.joda.time.DateTimeConstants.MILLIS_PER_SECOND;
-
-import java.time.Clock;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-
-import org.joda.time.DateTimeZone;
-import org.junit.Test;
 
 public class JodaClockTest {
     @Test
@@ -152,5 +153,15 @@ public class JodaClockTest {
     public void static_factory_returns_existing_joda_clock() throws Exception {
         JodaClock jodaClock = JodaClock.using(Clock.systemUTC());
         assertThat(JodaClock.using(jodaClock), sameInstance(jodaClock));
+    }
+
+    @Test
+    public void static_factory_returns_fixed_clock() throws Exception {
+        JodaClock jodaClock = JodaClock.fixed(Instant.parse("2019-12-23T11:00:00Z"), DateTimeZone.UTC);
+        assertThat(jodaClock, instanceOf(FixedJodaClock.class));
+        assertThat(jodaClock.now(), equalTo(Instant.parse("2019-12-23T11:00:00Z")));
+        assertThat(jodaClock.getDateTimeZone(), equalTo(DateTimeZone.UTC));
+        assertThat(jodaClock.withZone(DateTimeZone.UTC), sameInstance(jodaClock));
+        assertThat(jodaClock.withZone(DateTimeZone.forID("Europe/London")).getDateTimeZone(), equalTo(DateTimeZone.forID("Europe/London")));
     }
 }
