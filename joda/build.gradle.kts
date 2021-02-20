@@ -5,5 +5,5 @@ dependencies {
     api("joda-time:joda-time:2.10.5")
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest-core:1.3")
-    testImplementation("org.hamcrest:hamcrest-library:1.3")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
 }
