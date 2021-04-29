@@ -1,0 +1,17 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: joda-time:joda-time
+    versions:
+    - 2.10.10
+  - dependency-name: org.hamcrest:hamcrest-core
+    versions:
+    - "2.2"
+  - dependency-name: org.hamcrest:hamcrest-library
+    versions:
+    - "2.2"
