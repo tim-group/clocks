@@ -1,5 +1,9 @@
 name: "Gradle Build"
-on: push
+on:
+  push:
+    paths-ignore:
+      - '**/README.md'
+      - 'docs/**'
 
 jobs:
   gradle:
