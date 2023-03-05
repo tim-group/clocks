@@ -1,6 +1,8 @@
 Clocks
 ======
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.timgroup/clocks-joda.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.timgroup%22%20AND%20a%3A%22clocks-joda%22)
+
 Implementations of JSR310's java.time.Clock to help with testing,
 and for integration with Joda-Time.
 
