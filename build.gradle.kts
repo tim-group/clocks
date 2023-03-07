@@ -67,32 +67,34 @@ subprojects {
                 }
             }
         }
-        publications {
-            val artifactId: String? by project.ext
-            register<MavenPublication>("mavenJava") {
-                this.artifactId = when {
-                    artifactId != null -> artifactId
-                    project == rootProject -> project.name
-                    else -> rootProject.name + project.path.replace(':', '-')
-                }
-                from(components["java"])
-                val pomName: String? by project
-                pom {
-                    name.set(pomName ?: project.name)
-                    description.set(project.description)
-                    url.set("http://github.com/tim-group/clocks")
-                    licenses {
-                        license {
-                            name.set("The BSD 2-Clause License")
-                            url.set("http://opensource.org/licenses/BSD-2-Clause")
-                            distribution.set("repo")
-                        }
+        afterEvaluate {
+            publications {
+                val artifactId: String? by project.ext
+                register<MavenPublication>("mavenJava") {
+                    this.artifactId = when {
+                        artifactId != null -> artifactId
+                        project == rootProject -> project.name
+                        else -> rootProject.name + project.path.replace(':', '-')
                     }
-                    developers {
-                        developer {
-                            id.set("steve.haslam@timgroup.com")
-                            name.set("Steve Haslam")
-                            email.set("steve.haslam@timgroup.com")
+                    from(components["java"])
+                    val pomName: String? by project
+                    pom {
+                        name.set(pomName ?: project.name)
+                        description.set(project.description)
+                        url.set("http://github.com/tim-group/clocks")
+                        licenses {
+                            license {
+                                name.set("The BSD 2-Clause License")
+                                url.set("http://opensource.org/licenses/BSD-2-Clause")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("steve.haslam@timgroup.com")
+                                name.set("Steve Haslam")
+                                email.set("steve.haslam@timgroup.com")
+                            }
                         }
                     }
                 }
