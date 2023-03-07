@@ -15,9 +15,9 @@ subprojects {
     tasks.withType<Jar> {
         manifest {
             attributes(
-                    "Implementation-Title" to project.name,
-                    "Implementation-Version" to project.version,
-                    "Implementation-Vendor" to "TIM Group Ltd"
+                "Implementation-Title" to project.name,
+                "Implementation-Version" to project.version,
+                "Implementation-Vendor" to "TIM Group Ltd"
             )
         }
     }
@@ -46,7 +46,7 @@ subprojects {
             tasks.named<Jar>("jar") {
                 manifest {
                     attributes(
-                            "Automatic-Module-Name" to javaModuleName
+                        "Automatic-Module-Name" to javaModuleName
                     )
                 }
             }
@@ -76,23 +76,23 @@ subprojects {
                     else -> rootProject.name + project.path.replace(':', '-')
                 }
                 from(components["java"])
-                addPomElements {
-                    val pomName: String? by project
-                    addElement("name", pomName ?: project.name)
-                    addElement("description", project.description)
-                    addElement("url", "http://github.com/tim-group/clocks")
-                    addElement("licenses") {
-                        addElement("license") {
-                            addElement("name", "The BSD 2-Clause License")
-                            addElement("url", "http://opensource.org/licenses/BSD-2-Clause")
-                            addElement("distribution", "repo")
+                val pomName: String? by project
+                pom {
+                    name.set(pomName ?: project.name)
+                    description.set(project.description)
+                    url.set("http://github.com/tim-group/clocks")
+                    licenses {
+                        license {
+                            name.set("The BSD 2-Clause License")
+                            url.set("http://opensource.org/licenses/BSD-2-Clause")
+                            distribution.set("repo")
                         }
                     }
-                    addElement("developers") {
-                        addElement("developer") {
-                            addElement("id", "steve.haslam@timgroup.com")
-                            addElement("name", "Steve Haslam")
-                            addElement("email", "steve.haslam@timgroup.com")
+                    developers {
+                        developer {
+                            id.set("steve.haslam@timgroup.com")
+                            name.set("Steve Haslam")
+                            email.set("steve.haslam@timgroup.com")
                         }
                     }
                 }
