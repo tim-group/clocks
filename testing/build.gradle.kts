@@ -1,5 +1,12 @@
+plugins {
+    id("clocks-conventions")
+}
+
 description = "JSR310 clock implementations for use in testing"
-extra["javaModuleName"] = "com.timgroup.clocks.testing"
+
+clocks {
+    javaModuleName.set("com.timgroup.clocks.testing")
+}
 
 dependencies {
     testImplementation("junit:junit:4.13.2")

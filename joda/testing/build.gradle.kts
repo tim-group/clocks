@@ -1,5 +1,12 @@
+plugins {
+    id("clocks-conventions")
+}
+
 description = "Joda-Clock implementations for use in testing"
-extra["javaModuleName"] = "com.timgroup.clocks.joda.testing"
+
+clocks {
+    javaModuleName.set("com.timgroup.clocks.joda.testing")
+}
 
 dependencies {
     api("junit:junit:4.13.2")

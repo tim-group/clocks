@@ -1,5 +1,12 @@
+plugins {
+    id("clocks-conventions")
+}
+
 description = "Extension of java.time.Clock to integrate with Joda-Time"
-extra["javaModuleName"] = "com.timgroup.clocks.joda"
+
+clocks {
+    javaModuleName.set("com.timgroup.clocks.joda")
+}
 
 dependencies {
     api("joda-time:joda-time:2.10.10")
