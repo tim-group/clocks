@@ -17,3 +17,7 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest-core:2.2")
     testImplementation("org.hamcrest:hamcrest-library:2.2")
 }
+
+timgroupRepo {
+    artifactId = "clocks-joda-testing"
+}
