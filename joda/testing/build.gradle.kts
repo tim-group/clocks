@@ -19,5 +19,5 @@ dependencies {
 }
 
 timgroupRepo {
-    artifactId = "clocks-joda-testing"
+    artifactId.set("clocks-joda-testing")
 }
