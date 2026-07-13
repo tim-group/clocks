@@ -13,6 +13,11 @@ jobs:
 
       - uses: actions/setup-java@v5
         with:
+          java-version: 8
+          distribution: zulu
+
+      - uses: actions/setup-java@v5
+        with:
           java-version: 17
           distribution: zulu
 
