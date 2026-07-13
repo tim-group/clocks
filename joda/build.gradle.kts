@@ -1,4 +1,6 @@
 plugins {
+    id("java-common-conventions")
+    id("java-publishing-conventions")
     id("clocks-conventions")
 }
 
