@@ -12,6 +12,6 @@ clocks {
 
 dependencies {
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.hamcrest:hamcrest-core:2.2")
-    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    testImplementation("org.hamcrest:hamcrest-core:3.0")
+    testImplementation("org.hamcrest:hamcrest-library:3.0")
 }
