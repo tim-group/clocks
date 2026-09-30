@@ -17,7 +17,7 @@ clocks {
 }
 
 dependencies {
-    api("joda-time:joda-time:2.10.10")
+    api("joda-time:joda-time:2.14.4")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.hamcrest:hamcrest-core:2.2")
     testImplementation("org.hamcrest:hamcrest-library:2.2")
