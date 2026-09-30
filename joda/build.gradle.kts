@@ -6,6 +6,12 @@ plugins {
 
 description = "Extension of java.time.Clock to integrate with Joda-Time"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 clocks {
     javaModuleName.set("com.timgroup.clocks.joda")
 }

@@ -1,3 +1,3 @@
 plugins {
-    id("com.timgroup.jarmangit") version "1.1.117"
+    id("com.timgroup.jarmangit") version "1.1.117" apply false
 }

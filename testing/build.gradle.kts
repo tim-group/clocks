@@ -6,6 +6,12 @@ plugins {
 
 description = "JSR310 clock implementations for use in testing"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 clocks {
     javaModuleName.set("com.timgroup.clocks.testing")
 }

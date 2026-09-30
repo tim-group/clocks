@@ -6,6 +6,12 @@ plugins {
 
 description = "Joda-Clock implementations for use in testing"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 clocks {
     javaModuleName.set("com.timgroup.clocks.joda.testing")
 }
